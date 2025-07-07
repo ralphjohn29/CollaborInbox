@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Broadcast Event Test</title>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .row { display: flex; flex-wrap: wrap; margin: 0 -15px; }
+        .col { flex: 1; padding: 0 15px; min-width: 300px; }
+        h1, h2 { color: #333; }
+        pre { 
+            background: #f5f5f5; 
+            padding: 10px; 
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        .event-box {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            margin-bottom: 15px;
+            overflow-y: auto;
+            height: 300px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+        .event-item {
+            padding: 8px;
+            margin-bottom: 8px;
+            border-bottom: 1px solid #eee;
+        }
+        .event-thread { background-color: #e6f7ff; }
+        .event-assigned { background-color: #f6ffed; }
+        .event-message { background-color: #fff7e6; }
+        .timestamp {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Broadcast Event Test</h1>
+        
+        <div class="row">
+            <div class="col">
+                <h2>Connection Settings</h2>
+                <div class="form-group">
+                    <label for="tenant-id">Tenant ID:</label>
+                    <input type="number" id="tenant-id" value="1">
+                </div>
+                <div class="form-group">
+                    <label for="thread-id">Thread ID (optional):</label>
+                    <input type="number" id="thread-id">
+                </div>
+                <div class="form-group">
+                    <label for="user-id">User ID (optional):</label>
+                    <input type="number" id="user-id">
+                </div>
+                <div class="form-group">
+                    <button id="connect">Connect</button>
+                    <button id="disconnect" disabled>Disconnect</button>
+                </div>
+                <div class="form-group">
+                    <label>Connection Status:</label>
+                    <pre id="connection-status">Disconnected</pre>
+                </div>
+            </div>
+            
+            <div class="col">
+                <h2>Events</h2>
+                <div class="event-box" id="events-container"></div>
+                <div class="form-group">
+                    <button id="clear-events">Clear Events</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const connectBtn = document.getElementById('connect');
+        const disconnectBtn = document.getElementById('disconnect');
+        const clearEventsBtn = document.getElementById('clear-events');
+        const tenantIdInput = document.getElementById('tenant-id');
+        const threadIdInput = document.getElementById('thread-id');
+        const userIdInput = document.getElementById('user-id');
+        const connectionStatus = document.getElementById('connection-status');
+        const eventsContainer = document.getElementById('events-container');
+        
+        let socket;
+        
+        function updateStatus(status) {
+            connectionStatus.textContent = status;
+        }
+        
+        function addEvent(data, type) {
+            const item = document.createElement('div');
+            item.className = `event-item event-${type}`;
+            
+            const timestamp = document.createElement('div');
+            timestamp.className = 'timestamp';
+            timestamp.textContent = new Date().toLocaleString();
+            item.appendChild(timestamp);
+            
+            const content = document.createElement('pre');
+            content.textContent = JSON.stringify(data, null, 2);
+            item.appendChild(content);
+            
+            eventsContainer.prepend(item);
+        }
+        
+        connectBtn.addEventListener('click', () => {
+            const tenantId = tenantIdInput.value;
+            const threadId = threadIdInput.value;
+            const userId = userIdInput.value;
+            
+            if (!tenantId) {
+                alert('Tenant ID is required');
+                return;
+            }
+            
+            try {
+                // Connect to Socket.io server
+                socket = io('http://localhost:6001');
+                
+                socket.on('connect', () => {
+                    updateStatus('Connected to WebSocket server');
+                    connectBtn.disabled = true;
+                    disconnectBtn.disabled = false;
+                    
+                    // Subscribe to tenant channel
+                    const tenantChannel = `private-tenant.${tenantId}.threads`;
+                    socket.emit('subscribe', {
+                        channel: tenantChannel,
+                        auth: {}
+                    });
+                    
+                    updateStatus(`Subscribed to ${tenantChannel}`);
+                    
+                    // Subscribe to thread channel if provided
+                    if (threadId) {
+                        const threadChannel = `private-tenant.${tenantId}.thread.${threadId}`;
+                        socket.emit('subscribe', {
+                            channel: threadChannel,
+                            auth: {}
+                        });
+                        updateStatus(`Subscribed to ${tenantChannel} and ${threadChannel}`);
+                    }
+                    
+                    // Subscribe to user channel if provided
+                    if (userId) {
+                        const userChannel = `private-tenant.${tenantId}.user.${userId}`;
+                        socket.emit('subscribe', {
+                            channel: userChannel,
+                            auth: {}
+                        });
+                        updateStatus(`Subscribed to channels including ${userChannel}`);
+                    }
+                });
+                
+                socket.on('disconnect', () => {
+                    updateStatus('Disconnected from WebSocket server');
+                    connectBtn.disabled = false;
+                    disconnectBtn.disabled = true;
+                });
+                
+                socket.on('error', (error) => {
+                    updateStatus(`Error: ${error}`);
+                });
+                
+                // Listen for events
+                socket.on('thread.updated', (data) => {
+                    addEvent(data, 'thread');
+                });
+                
+                socket.on('thread.assigned', (data) => {
+                    addEvent(data, 'assigned');
+                });
+                
+                socket.on('message.new', (data) => {
+                    addEvent(data, 'message');
+                });
+                
+            } catch (error) {
+                updateStatus(`Error: ${error.message}`);
+            }
+        });
+        
+        disconnectBtn.addEventListener('click', () => {
+            if (socket) {
+                socket.disconnect();
+                socket = null;
+            }
+        });
+        
+        clearEventsBtn.addEventListener('click', () => {
+            eventsContainer.innerHTML = '';
+        });
+    </script>
+</body>
+</html> 

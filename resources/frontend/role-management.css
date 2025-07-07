@@ -1,0 +1,138 @@
+/**
+ * Role Management and Permission Components Styles
+ */
+
+/* Loading spinner */
+.loading-spinner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    color: #6366f1;
+    font-size: 0.875rem;
+}
+
+.loading-spinner::before {
+    content: '';
+    width: 1.25rem;
+    height: 1.25rem;
+    border: 2px solid #d1d5db;
+    border-top-color: #6366f1;
+    border-radius: 50%;
+    margin-right: 0.5rem;
+    animation: spinner 0.6s linear infinite;
+}
+
+@keyframes spinner {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Role selector styles */
+.role-selector-component select {
+    transition: all 0.2s ease;
+}
+
+.role-selector-component select:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+}
+
+/* Permission manager styles */
+.permission-manager {
+    width: 100%;
+}
+
+.permission-checkbox {
+    cursor: pointer;
+}
+
+.permission-checkbox:checked {
+    background-color: #6366f1;
+    border-color: #6366f1;
+}
+
+/* Role management container */
+.role-management {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Alert styles */
+.alert {
+    padding: 0.75rem 1rem;
+    border-radius: 0.375rem;
+    margin-bottom: 1rem;
+}
+
+.alert-warning {
+    background-color: #fff7ed;
+    border: 1px solid #ffedd5;
+    color: #c2410c;
+}
+
+.alert-danger {
+    background-color: #fef2f2;
+    border: 1px solid #fee2e2;
+    color: #b91c1c;
+}
+
+.alert-info {
+    background-color: #eff6ff;
+    border: 1px solid #dbeafe;
+    color: #1e40af;
+}
+
+.alert-success {
+    background-color: #ecfdf5;
+    border: 1px solid #d1fae5;
+    color: #047857;
+}
+
+/* Button states */
+button:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+/* Permission group categories */
+.permission-category {
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+}
+
+.permission-category:last-child {
+    border-bottom: none;
+}
+
+/* Success and error messages */
+.text-red-600 {
+    color: #dc2626;
+}
+
+.text-green-600 {
+    color: #059669;
+}
+
+.hidden {
+    display: none;
+}
+
+/* Animation for success/error messages */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.text-red-600:not(.hidden),
+.text-green-600:not(.hidden) {
+    animation: fadeIn 0.3s ease-out;
+} 

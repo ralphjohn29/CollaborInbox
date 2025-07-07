@@ -1,0 +1,84 @@
+# Overview
+CollaborInbox is a multi-tenant, collaborative shared inbox CRM for teams managing high-volume company emails (e.g., sales@, support@). It centralizes inbound emails into a unified dashboard, enabling agents to assign, respond, and collaborate on conversations in real time. Built for B2B teams, service providers, and client-focused organizations.
+
+# Core Features
+
+- **Multi-Tenant Subdomain Portals**
+  - Each company has a unique subdomain (e.g., acme.collaborinbox.com).
+  - Data and settings are isolated per tenant.
+
+- **IMAP Email Integration**
+  - Connect to external mailboxes via IMAP.
+  - Fetch and store inbound emails as threads per tenant.
+
+- **Shared Inbox & Thread Management**
+  - All agents see the same inbox for their company.
+  - Each email becomes a thread; agents can assign threads, reply, and add internal notes.
+
+- **Agent Assignment & Collaboration**
+  - Assign/reassign threads to agents.
+  - Add internal notes (not visible to customers).
+  - Apply dispositions (e.g., "New Lead", "Follow Up", "Closed").
+
+- **Outbound Email (Reply)**
+  - Agents reply from the dashboard via SMTP or Mailgun/Postmark.
+
+- **Real-Time Updates**
+  - Thread changes, assignments, and new messages update instantly via WebSockets (Laravel Echo + Redis).
+
+# User Experience
+
+- **Personas:** Support/sales agents, team leads, company admins.
+- **Flows:** Login → Select/auto-detect tenant → View inbox → Assign/respond/collaborate on threads.
+- **UI/UX:** Clean, responsive dashboard; real-time notifications; clear assignment/status indicators.
+
+# Technical Architecture
+
+- **Backend:** Laravel 11 (API, IMAP/SMTP, multi-tenancy, queues, WebSockets)
+- **Frontend:** Nuxt.js (Vue 3 SPA, subdomain routing, real-time updates)
+- **Data:** MySQL/Postgres (multi-tenant), Redis (queues, cache, pub/sub)
+- **Email:** Webklex/laravel-imap, Laravel mail, Mailgun/Postmark drivers
+- **Real-Time:** Laravel Echo Server + Redis
+- **Multi-Tenancy:** Subdomain-based routing, tenant_id scoping
+
+# Development Roadmap
+
+## MVP Requirements
+- Multi-tenant setup with subdomain routing
+- IMAP integration for inbound email
+- Shared inbox UI (thread list, thread view)
+- Agent assignment, internal notes, dispositions
+- Outbound email (reply) via SMTP/Mailgun/Postmark
+- Real-time updates (thread changes, assignments, new messages)
+- Basic authentication and agent management
+
+## Future Enhancements
+- OAuth for Gmail/Outlook
+- Advanced search/filtering
+- SLA tracking, reporting, analytics
+- Customizable dispositions and workflows
+- Mobile app
+
+# Logical Dependency Chain
+
+1. Multi-tenancy & subdomain routing foundation
+2. User authentication & agent management
+3. IMAP integration & email fetching
+4. Thread model & shared inbox UI
+5. Agent assignment, notes, dispositions
+6. Outbound email (reply)
+7. Real-time updates (Echo/WebSockets)
+8. Polish UI/UX, error handling, notifications
+
+# Risks and Mitigations
+
+- **IMAP edge cases:** Start with a single provider, expand after MVP.
+- **Tenant isolation:** Use strict scoping and automated tests.
+- **Real-time scaling:** Use Redis pub/sub, test with multiple agents.
+- **Email deliverability:** Use trusted providers (Mailgun/Postmark).
+
+# Appendix
+
+- See HubSpot Conversations Inbox for UI/UX inspiration.
+- Use tenancy/tenancy for Laravel multi-tenancy if needed.
+- Reference: Webklex/laravel-imap, Laravel Echo docs. 

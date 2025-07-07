@@ -16,6 +16,13 @@
                 "DEFAULT_SUBTASKS": 5,
                 "DEFAULT_PRIORITY": "medium"
             }
+        },
+        "github": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-github"],
+            "env": {
+                "GITHUB_PERSONAL_ACCESS_TOKEN": "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"
+            }
         }
     }
 }

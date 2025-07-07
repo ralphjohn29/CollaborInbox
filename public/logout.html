@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emergency Logout</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        h1 {
+            margin-top: 40px;
+            color: #333;
+        }
+        .logout-button {
+            display: inline-block;
+            background-color: #dc3545;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 4px;
+            font-size: 16px;
+            margin: 20px 0;
+            cursor: pointer;
+            border: none;
+        }
+        .logout-button:hover {
+            background-color: #c82333;
+        }
+        .instructions {
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            text-align: left;
+        }
+        .instructions pre {
+            background-color: #e9ecef;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Emergency Logout</h1>
+    <p>Use this page if you're stuck in a login loop or having authentication issues.</p>
+    
+    <button id="logout-button" class="logout-button">Clear Authentication & Logout</button>
+    
+    <div class="instructions">
+        <h3>What this does:</h3>
+        <ul>
+            <li>Clears all authentication tokens from localStorage</li>
+            <li>Resets any cookie-based authentication</li>
+            <li>Redirects you to the login page with a clean state</li>
+        </ul>
+        
+        <h3>Additional Troubleshooting:</h3>
+        <p>If this doesn't resolve your issue, try these steps:</p>
+        <ol>
+            <li>Open browser developer tools (F12 or Right-click → Inspect)</li>
+            <li>Go to the "Application" tab</li>
+            <li>Clear localStorage and Cookies by running this in the Console:</li>
+            <pre>localStorage.clear();
+document.cookie.split(";").forEach(function(c) {
+    document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+});</pre>
+        </ol>
+    </div>
+    
+    <script>
+        document.getElementById('logout-button').addEventListener('click', function() {
+            // Clear localStorage data
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('user');
+            localStorage.removeItem('tenant');
+            localStorage.clear(); // For good measure
+            
+            // Clear any session cookies
+            document.cookie.split(";").forEach(function(c) {
+                document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+            });
+            
+            // Alert the user
+            alert('Authentication data cleared! Redirecting to login...');
+            
+            // Redirect to login with special parameter to force clean state
+            window.location.href = '/login?force_logout=1&t=' + new Date().getTime();
+        });
+    </script>
+</body>
+</html> 

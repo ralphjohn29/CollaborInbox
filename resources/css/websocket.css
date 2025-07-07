@@ -1,0 +1,73 @@
+/* WebSocket notification styles */
+.notification-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    width: 300px;
+}
+
+.notification {
+    background-color: white;
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 10px;
+    padding: 15px;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    opacity: 0;
+    transform: translateX(100%);
+}
+
+.notification.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.notification-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+}
+
+.notification-title {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.notification-close {
+    cursor: pointer;
+    color: #999;
+}
+
+.notification-close:hover {
+    color: #333;
+}
+
+.notification-body {
+    font-size: 14px;
+    color: #333;
+}
+
+.notification-time {
+    font-size: 12px;
+    color: #999;
+    margin-top: 5px;
+    text-align: right;
+}
+
+/* Notification types */
+.notification-info {
+    border-left: 4px solid #3490dc;
+}
+
+.notification-success {
+    border-left: 4px solid #38c172;
+}
+
+.notification-warning {
+    border-left: 4px solid #f6993f;
+}
+
+.notification-error {
+    border-left: 4px solid #e3342f;
+} 

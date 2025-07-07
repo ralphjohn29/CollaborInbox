@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Test</title>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        #log { 
+            height: 300px; 
+            width: 100%; 
+            border: 1px solid #ccc; 
+            margin: 10px 0; 
+            padding: 10px;
+            overflow-y: scroll;
+            background-color: #f9f9f9;
+        }
+        .success { color: green; }
+        .error { color: red; }
+        .event { color: blue; }
+    </style>
+</head>
+<body>
+    <h1>WebSocket Test</h1>
+    
+    <div>
+        <button id="connect">Connect to WebSocket</button>
+        <button id="disconnect" disabled>Disconnect</button>
+    </div>
+    
+    <h3>Event Log:</h3>
+    <div id="log"></div>
+    
+    <script>
+        const log = document.getElementById('log');
+        const connectBtn = document.getElementById('connect');
+        const disconnectBtn = document.getElementById('disconnect');
+        let socket;
+        
+        function logMessage(message, type = '') {
+            const entry = document.createElement('div');
+            entry.textContent = `${new Date().toLocaleTimeString()} - ${message}`;
+            if (type) entry.classList.add(type);
+            log.appendChild(entry);
+            log.scrollTop = log.scrollHeight;
+        }
+        
+        connectBtn.addEventListener('click', () => {
+            try {
+                // Connect to the Laravel Echo Server
+                socket = io('http://localhost:6001');
+                
+                socket.on('connect', () => {
+                    logMessage('Connected to WebSocket server', 'success');
+                    connectBtn.disabled = true;
+                    disconnectBtn.disabled = false;
+                    
+                    // Subscribe to the test channel
+                    socket.emit('subscribe', {
+                        channel: 'test-channel',
+                        auth: {}
+                    });
+                    
+                    logMessage('Subscribed to test-channel', 'success');
+                });
+                
+                socket.on('disconnect', () => {
+                    logMessage('Disconnected from WebSocket server', 'error');
+                    connectBtn.disabled = false;
+                    disconnectBtn.disabled = true;
+                });
+                
+                socket.on('error', (error) => {
+                    logMessage(`WebSocket error: ${error}`, 'error');
+                });
+                
+                socket.on('App\\Events\\TestEvent', (data) => {
+                    logMessage(`Received message: ${data.message}`, 'event');
+                });
+                
+            } catch (error) {
+                logMessage(`Error creating connection: ${error.message}`, 'error');
+            }
+        });
+        
+        disconnectBtn.addEventListener('click', () => {
+            if (socket) {
+                socket.disconnect();
+                socket = null;
+            }
+        });
+        
+        logMessage('Page loaded. Click "Connect to WebSocket" to begin.');
+    </script>
+</body>
+</html> 

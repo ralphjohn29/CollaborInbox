@@ -1,0 +1,10 @@
+{
+    "/js/babel-helpers.js": "/js/babel-helpers.js",
+    "/js/app.js": "/js/app.js",
+    "/css/app.css": "/css/app.css",
+    "/js/debug.js": "/js/debug.js",
+    "/js/WebSocketExample.js": "/js/WebSocketExample.js",
+    "/css/auth.css": "/css/auth.css",
+    "/css/websocket.css": "/css/websocket.css",
+    "/css/role-management.css": "/css/role-management.css"
+}
