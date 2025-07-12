@@ -1,5 +1,3 @@
-
-
 <?php $__env->startSection('title', 'User Management - CollaborInbox'); ?>
 
 <?php $__env->startSection('body-class', 'dashboard-page'); ?>

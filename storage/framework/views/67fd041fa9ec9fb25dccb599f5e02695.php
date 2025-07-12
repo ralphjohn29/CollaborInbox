@@ -1,5 +1,3 @@
-
-
 <?php $__env->startSection('title', 'Inbox - CollaborInbox'); ?>
 
 <?php $__env->startSection('body-class', 'inbox-page'); ?>
