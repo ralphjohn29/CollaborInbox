@@ -16,7 +16,7 @@
             <span class="nav-item-text">Dashboard</span>
         </a>
 
-        <a href="{{ route('inbox.index') }}" class="nav-item {{ request()->routeIs('inbox.*') ? 'active' : '' }}">
+        <a href="{{ route('inbox.index') }}" class="nav-item {{ request()->routeIs('inbox.*') && !request()->routeIs('inbox.settings.dispositions*') ? 'active' : '' }}">
             <span class="nav-item-icon">
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M3 5C3 4.73478 3.10536 4.48043 3.29289 4.29289C3.48043 4.10536 3.73478 4 4 4H16C16.2652 4 16.5196 4.10536 16.7071 4.29289C16.8946 4.48043 17 4.73478 17 5V15C17 15.2652 16.8946 15.5196 16.7071 15.7071C16.5196 15.8946 16.2652 16 16 16H4C3.73478 16 3.48043 15.8946 3.29289 15.7071C3.10536 15.5196 3 15.2652 3 15V5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -27,7 +27,7 @@
             <span class="nav-item-text">Inbox</span>
         </a>
 
-        <a href="{{ route('dispositions.dashboard') }}" class="nav-item {{ request()->routeIs('dispositions.*') ? 'active' : '' }}">
+        <a href="{{ route('dispositions.dashboard') }}" class="nav-item {{ request()->routeIs('dispositions.*') || request()->routeIs('inbox.settings.dispositions*') ? 'active' : '' }}">
             <span class="nav-item-icon">
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <rect x="3" y="3" width="14" height="14" rx="2" stroke="currentColor" stroke-width="2"/>
@@ -45,29 +45,35 @@
                     <circle cx="10" cy="6" r="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
             </span>
-            <span class="nav-item-text">Users</span>
+            <span class="nav-item-text">User Management</span>
         </a>
         @endif
 
-        <a href="{{ route('inbox.settings.accounts') }}" class="nav-item {{ request()->routeIs('inbox.settings.accounts*') ? 'active' : '' }}">
-            <span class="nav-item-icon">
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M3 8L10 13L17 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <rect x="3" y="5" width="14" height="10" rx="2" stroke="currentColor" stroke-width="2"/>
-                </svg>
-            </span>
-            <span class="nav-item-text">Email Accounts</span>
-        </a>
-
-        <a href="{{ route('inbox.settings.dispositions') }}" class="nav-item {{ request()->routeIs('inbox.settings.dispositions*') ? 'active' : '' }}">
-            <span class="nav-item-icon">
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="2"/>
-                    <path d="M10 1V4M10 16V19M19 10H16M4 10H1M16.364 16.364L14.243 14.243M5.757 5.757L3.636 3.636M16.364 3.636L14.243 5.757M5.757 14.243L3.636 16.364" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </span>
-            <span class="nav-item-text">Settings</span>
-        </a>
+        @if(request()->routeIs('inbox.*'))
+        <div style="margin-top: 2rem; padding: 0 1rem;">
+            <div style="font-size: 0.75rem; color: hsl(var(--muted-foreground)); font-weight: 600; margin-bottom: 0.5rem;">
+                EMAIL SETTINGS
+            </div>
+            <a href="{{ route('inbox.settings.accounts') }}" class="nav-item {{ request()->routeIs('inbox.settings.accounts*') ? 'active' : '' }}">
+                <span class="nav-item-icon">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="10" cy="10" r="10" stroke="currentColor" stroke-width="2"/>
+                        <path d="M8 10h4M10 8v4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </span>
+                <span class="nav-item-text">Email Accounts</span>
+            </a>
+            
+            <a href="{{ route('inbox.email-setup') }}" class="nav-item {{ request()->routeIs('inbox.email-setup') ? 'active' : '' }}">
+                <span class="nav-item-icon">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M11.567 10.898a.5.5 0 1 0 .866-.5l1.134-1.96a.5.5 0 0 0-.684-.684l-1.96 1.134a.5.5 0 0 0 .644 1.01ZM7.6 5.6a5 5 0 1 1 4.8 8.4L7 19l1-6-6 1 5-5.4a5 5 0 0 1 .6-3Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </span>
+                <span class="nav-item-text">Email Setup</span>
+            </a>
+        </div>
+        @endif
     </div>
 
     <div class="sidebar-footer">

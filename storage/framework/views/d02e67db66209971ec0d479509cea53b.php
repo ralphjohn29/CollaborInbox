@@ -660,7 +660,7 @@
                             <polyline points="9 22 9 12 15 12 15 22"/>
                         </svg>
                     </span>
-                    <span class="nav-item-text">Dashboard</span>
+                    <span class="nav-item-text">Dashboard 111</span>
                 </a>
                 
                 <a href="#" class="nav-item">

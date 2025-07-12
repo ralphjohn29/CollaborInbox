@@ -654,7 +654,7 @@
         <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <a href="#" class="sidebar-logo">
+                <a href="<?php echo e(url('/dashboard')); ?>" class="sidebar-logo">
                     <div class="sidebar-logo-icon">CI</div>
                     <span class="sidebar-logo-text">CollaborInbox</span>
                 </a>
@@ -693,30 +693,8 @@
                     <span class="nav-item-text">Dispositions</span>
                 </a>
                 
-                <a href="#" class="nav-item">
-                    <span class="nav-item-icon">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M2 20h.01"/>
-                            <path d="M7 20v-4"/>
-                            <path d="M12 20v-8"/>
-                            <path d="M17 20V8"/>
-                            <path d="M22 4v16"/>
-                        </svg>
-                    </span>
-                    <span class="nav-item-text">Analytics</span>
-                </a>
                 
-                <a href="#" class="nav-item">
-                    <span class="nav-item-icon">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                            <circle cx="9" cy="7" r="4"/>
-                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                        </svg>
-                    </span>
-                    <span class="nav-item-text">Customers</span>
-                </a>
+                
                 
                 <?php if(auth()->check() && auth()->user()->is_admin): ?>
                 <a href="<?php echo e(url('/users')); ?>" class="nav-item">
@@ -732,37 +710,8 @@
                 </a>
                 <?php endif; ?>
                 
-                <a href="#" class="nav-item">
-                    <span class="nav-item-icon">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
-                            <line x1="8" y1="21" x2="16" y2="21"/>
-                            <line x1="12" y1="17" x2="12" y2="21"/>
-                        </svg>
-                    </span>
-                    <span class="nav-item-text">Products</span>
-                </a>
                 
-                <a href="#" class="nav-item">
-                    <span class="nav-item-icon">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10"/>
-                            <polyline points="12 6 12 12 16 14"/>
-                        </svg>
-                    </span>
-                    <span class="nav-item-text">Orders</span>
-                </a>
                 
-                <a href="#" class="nav-item">
-                    <span class="nav-item-icon">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="3"/>
-                            <path d="M12 1v6m0 6v6m11-11h-6m-6 0H1"/>
-                            <path d="m20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-                        </svg>
-                    </span>
-                    <span class="nav-item-text">Settings</span>
-                </a>
             </nav>
             
             <div class="sidebar-footer">

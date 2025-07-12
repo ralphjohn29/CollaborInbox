@@ -1,10 +1,10 @@
-@extends('layouts.app')
 
-@section('title', 'User Management - CollaborInbox')
 
-@section('body-class', 'dashboard-page')
+<?php $__env->startSection('title', 'User Management - CollaborInbox'); ?>
 
-@section('styles')
+<?php $__env->startSection('body-class', 'dashboard-page'); ?>
+
+<?php $__env->startSection('styles'); ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -638,22 +638,22 @@
             }
         }
     </style>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
     <div class="modern-dashboard">
         <div class="dashboard-container">
         <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <a href="#" class="sidebar-logo">
+                <a href="<?php echo e(url('/dashboard')); ?>" class="sidebar-logo">
                     <div class="sidebar-logo-icon">CI</div>
                     <span class="sidebar-logo-text">CollaborInbox</span>
                 </a>
             </div>
-            
+
             <nav class="sidebar-nav">
-                <a href="{{ url('/dashboard') }}" class="nav-item">
+                <a href="<?php echo e(url('/dashboard')); ?>" class="nav-item">
                     <span class="nav-item-icon">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
@@ -662,8 +662,8 @@
                     </span>
                     <span class="nav-item-text">Dashboard</span>
                 </a>
-                
-                <a href="#" class="nav-item">
+
+                <a href="<?php echo e(url('/inbox')); ?>" class="nav-item">
                     <span class="nav-item-icon">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
@@ -673,33 +673,23 @@
                     <span class="nav-item-text">Inbox</span>
                 </a>
                 
-                <a href="#" class="nav-item">
+                <a href="<?php echo e(url('/dispositions')); ?>" class="nav-item">
                     <span class="nav-item-icon">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M2 20h.01"/>
-                            <path d="M7 20v-4"/>
-                            <path d="M12 20v-8"/>
-                            <path d="M17 20V8"/>
-                            <path d="M22 4v16"/>
+                            <rect x="3" y="3" width="7" height="7"/>
+                            <rect x="14" y="3" width="7" height="7"/>
+                            <rect x="14" y="14" width="7" height="7"/>
+                            <rect x="3" y="14" width="7" height="7"/>
                         </svg>
                     </span>
-                    <span class="nav-item-text">Analytics</span>
+                    <span class="nav-item-text">Dispositions</span>
                 </a>
+
                 
-                <a href="#" class="nav-item">
-                    <span class="nav-item-icon">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                            <circle cx="9" cy="7" r="4"/>
-                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                        </svg>
-                    </span>
-                    <span class="nav-item-text">Customers</span>
-                </a>
                 
-                @if(auth()->user()->is_admin)
-                <a href="{{ route('users.index') }}" class="nav-item active">
+
+                <?php if(auth()->check() && auth()->user()->is_admin): ?>
+                <a href="<?php echo e(url('/users')); ?>" class="nav-item active">
                     <span class="nav-item-icon">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
@@ -710,41 +700,12 @@
                     </span>
                     <span class="nav-item-text">User Management</span>
                 </a>
-                @endif
+                <?php endif; ?>
+
                 
-                <a href="#" class="nav-item">
-                    <span class="nav-item-icon">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
-                            <line x1="8" y1="21" x2="16" y2="21"/>
-                            <line x1="12" y1="17" x2="12" y2="21"/>
-                        </svg>
-                    </span>
-                    <span class="nav-item-text">Products</span>
-                </a>
                 
-                <a href="#" class="nav-item">
-                    <span class="nav-item-icon">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10"/>
-                            <polyline points="12 6 12 12 16 14"/>
-                        </svg>
-                    </span>
-                    <span class="nav-item-text">Orders</span>
-                </a>
-                
-                <a href="#" class="nav-item">
-                    <span class="nav-item-icon">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="3"/>
-                            <path d="M12 1v6m0 6v6m11-11h-6m-6 0H1"/>
-                            <path d="m20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-                        </svg>
-                    </span>
-                    <span class="nav-item-text">Settings</span>
-                </a>
             </nav>
-            
+
             <div class="sidebar-footer">
                 <div class="nav-item">
                     <span class="nav-item-icon">
@@ -770,11 +731,11 @@
                         <line x1="3" y1="18" x2="21" y2="18"/>
                     </svg>
                 </button>
-                
+
                 <div class="header-search">
                     <input type="text" class="search-input" placeholder="Search users..." id="userSearch">
                 </div>
-                
+
                 <div class="header-actions">
                     <button class="header-button">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -783,21 +744,22 @@
                         </svg>
                         <span class="notification-badge"></span>
                     </button>
-                    
+
                     <div class="dropdown">
                         <div class="user-menu" id="userMenuToggle">
                             <div class="user-avatar">
-                                @auth
-                                    {{ substr(Auth::user()->name ?? 'U', 0, 1) }}
-                                @else
+                                <?php if(auth()->guard()->check()): ?>
+                                    <?php echo e(substr(Auth::user()->name ?? 'U', 0, 1)); ?>
+
+                                <?php else: ?>
                                     U
-                                @endauth
+                                <?php endif; ?>
                             </div>
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <polyline points="6 9 12 15 18 9"/>
                             </svg>
                         </div>
-                        
+
                         <div class="dropdown-menu" id="userMenu">
                             <a href="#" class="dropdown-item">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;">
@@ -814,7 +776,7 @@
                                 Settings
                             </a>
                             <div class="dropdown-divider"></div>
-                            <a href="{{ url('/logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="dropdown-item">
+                            <a href="<?php echo e(url('/logout')); ?>" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="dropdown-item">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;">
                                     <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
                                     <polyline points="16 17 21 12 16 7"/>
@@ -822,8 +784,8 @@
                                 </svg>
                                 Logout
                             </a>
-                            <form id="logout-form" action="{{ url('/logout') }}" method="POST" style="display: none;">
-                                @csrf
+                            <form id="logout-form" action="<?php echo e(url('/logout')); ?>" method="POST" style="display: none;">
+                                <?php echo csrf_field(); ?>
                             </form>
                         </div>
                     </div>
@@ -837,17 +799,17 @@
                     <p class="page-description">Manage system users, roles, and permissions</p>
                 </div>
 
-                @if (session('success'))
+                <?php if(session('success')): ?>
                     <div class="card" style="background-color: hsl(142.1 76.2% 36.3% / 0.1); border-color: hsl(142.1 76.2% 36.3% / 0.3); padding: 1rem; margin-bottom: 1rem;">
-                        <p style="color: hsl(142.1 76.2% 36.3%); margin: 0;">{{ session('success') }}</p>
+                        <p style="color: hsl(142.1 76.2% 36.3%); margin: 0;"><?php echo e(session('success')); ?></p>
                     </div>
-                @endif
+                <?php endif; ?>
 
-                @if (session('error'))
+                <?php if(session('error')): ?>
                     <div class="card" style="background-color: hsl(var(--destructive) / 0.1); border-color: hsl(var(--destructive) / 0.3); padding: 1rem; margin-bottom: 1rem;">
-                        <p style="color: hsl(var(--destructive)); margin: 0;">{{ session('error') }}</p>
+                        <p style="color: hsl(var(--destructive)); margin: 0;"><?php echo e(session('error')); ?></p>
                     </div>
-                @endif
+                <?php endif; ?>
 
                 <!-- Users Table -->
                 <div class="card">
@@ -877,84 +839,86 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse ($users as $user)
+                                <?php $__empty_1 = true; $__currentLoopData = $users; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $user): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                                     <tr>
                                         <td>
                                             <div style="display: flex; align-items: center; gap: 0.75rem;">
                                                 <div class="user-avatar" style="width: 36px; height: 36px;">
-                                                    {{ substr($user->name, 0, 1) }}
+                                                    <?php echo e(substr($user->name, 0, 1)); ?>
+
                                                 </div>
                                                 <div>
-                                                    <div style="font-weight: 500;">{{ $user->name }}</div>
-                                                    <div style="font-size: 0.75rem; color: hsl(var(--muted-foreground));">{{ $user->email }}</div>
+                                                    <div style="font-weight: 500;"><?php echo e($user->name); ?></div>
+                                                    <div style="font-size: 0.75rem; color: hsl(var(--muted-foreground));"><?php echo e($user->email); ?></div>
                                                 </div>
                                             </div>
                                         </td>
                                         <td>
-                                            @if($user->role)
-                                                <span class="badge info">{{ $user->role->name }}</span>
-                                            @else
+                                            <?php if($user->role): ?>
+                                                <span class="badge info"><?php echo e($user->role->name); ?></span>
+                                            <?php else: ?>
                                                 <span class="badge">No Role</span>
-                                            @endif
+                                            <?php endif; ?>
                                         </td>
                                         <td>
-                                            @if($user->is_active)
+                                            <?php if($user->is_active): ?>
                                                 <span class="badge success">Active</span>
-                                            @else
+                                            <?php else: ?>
                                                 <span class="badge danger">Inactive</span>
-                                            @endif
+                                            <?php endif; ?>
                                         </td>
                                         <td>
-                                            @if($user->is_admin)
+                                            <?php if($user->is_admin): ?>
                                                 <span class="badge info">Yes</span>
-                                            @else
+                                            <?php else: ?>
                                                 <span class="badge">No</span>
-                                            @endif
+                                            <?php endif; ?>
                                         </td>
-                                        <td>{{ $user->created_at->format('M d, Y') }}</td>
+                                        <td><?php echo e($user->created_at->format('M d, Y')); ?></td>
                                         <td>
                                             <div class="dropdown">
-                                                <button class="btn btn-outline btn-sm" onclick="toggleDropdown('actions-{{ $user->id }}')">
+                                                <button class="btn btn-outline btn-sm" onclick="toggleDropdown('actions-<?php echo e($user->id); ?>')">
                                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                         <circle cx="12" cy="12" r="1"/>
                                                         <circle cx="12" cy="5" r="1"/>
                                                         <circle cx="12" cy="19" r="1"/>
                                                     </svg>
                                                 </button>
-                                                <div class="dropdown-menu" id="actions-{{ $user->id }}">
-                                                    <a href="#" class="dropdown-item" onclick="editUser({{ $user->id }})">
+                                                <div class="dropdown-menu" id="actions-<?php echo e($user->id); ?>">
+                                                    <a href="#" class="dropdown-item" onclick="editUser(<?php echo e($user->id); ?>)">
                                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;">
                                                             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
                                                             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
                                                         </svg>
                                                         Edit
                                                     </a>
-                                                    @if($user->id !== auth()->id())
-                                                        <a href="#" class="dropdown-item" onclick="deleteUser({{ $user->id }}, '{{ $user->name }}')">
+                                                    <?php if($user->id !== auth()->id()): ?>
+                                                        <a href="#" class="dropdown-item" onclick="deleteUser(<?php echo e($user->id); ?>, '<?php echo e($user->name); ?>')">
                                                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;">
                                                                 <polyline points="3 6 5 6 21 6"/>
                                                                 <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
                                                             </svg>
                                                             Delete
                                                         </a>
-                                                    @endif
+                                                    <?php endif; ?>
                                                 </div>
                                             </div>
                                         </td>
                                     </tr>
-                                @empty
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                                     <tr>
                                         <td colspan="6" style="text-align: center; padding: 2rem; color: hsl(var(--muted-foreground));">
                                             No users found.
                                         </td>
                                     </tr>
-                                @endforelse
+                                <?php endif; ?>
                             </tbody>
                         </table>
                     </div>
-                    
+
                     <div style="padding: 1rem;">
-                        {{ $users->links() }}
+                        <?php echo e($users->links()); ?>
+
                     </div>
                 </div>
             </div>
@@ -969,7 +933,7 @@
                 <h2 class="modal-title" id="modalTitle">Add New User</h2>
             </div>
             <form id="userForm" method="POST" action="">
-                @csrf
+                <?php echo csrf_field(); ?>
                 <input type="hidden" id="formMethod" name="_method" value="POST">
                 
                 <div class="modal-body">
@@ -998,9 +962,9 @@
                         <label class="form-label" for="role_id">Role</label>
                         <select class="form-select" id="role_id" name="role_id">
                             <option value="">No Role</option>
-                            @foreach($roles as $role)
-                                <option value="{{ $role->id }}">{{ $role->name }}</option>
-                            @endforeach
+                            <?php $__currentLoopData = $roles; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $role): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <option value="<?php echo e($role->id); ?>"><?php echo e($role->name); ?></option>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </select>
                     </div>
                     
@@ -1026,12 +990,12 @@
             </form>
         </div>
     </div>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@section('scripts')
+<?php $__env->startSection('scripts'); ?>
 <script>
     // Store users data for editing
-    const usersData = @json($users->items());
+    const usersData = <?php echo json_encode($users->items(), 15, 512) ?>;
     
     document.addEventListener('DOMContentLoaded', function() {
         // Sidebar toggle
@@ -1095,7 +1059,7 @@
     function openCreateModal() {
         document.getElementById('modalTitle').textContent = 'Add New User';
         document.getElementById('userForm').reset();
-        document.getElementById('userForm').action = '{{ route("users.store") }}';
+        document.getElementById('userForm').action = '<?php echo e(route("users.store")); ?>';
         document.getElementById('formMethod').value = 'POST';
         document.getElementById('password').required = true;
         document.getElementById('password_confirmation').required = true;
@@ -1109,7 +1073,7 @@
         if (!user) return;
         
         document.getElementById('modalTitle').textContent = 'Edit User';
-        document.getElementById('userForm').action = '{{ url("/users") }}/' + userId;
+        document.getElementById('userForm').action = '<?php echo e(url("/users")); ?>/' + userId;
         document.getElementById('formMethod').value = 'PUT';
         
         // Fill form with user data
@@ -1134,10 +1098,10 @@
         if (confirm(`Are you sure you want to delete user "${userName}"?`)) {
             const form = document.createElement('form');
             form.method = 'POST';
-            form.action = '{{ url("/users") }}/' + userId;
+            form.action = '<?php echo e(url("/users")); ?>/' + userId;
             form.innerHTML = `
-                @csrf
-                @method('DELETE')
+                <?php echo csrf_field(); ?>
+                <?php echo method_field('DELETE'); ?>
             `;
             document.body.appendChild(form);
             form.submit();
@@ -1157,4 +1121,7 @@
         }
     }
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\CollaborInbox\resources\views/users/index.blade.php ENDPATH**/ ?>

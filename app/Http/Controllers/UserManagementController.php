@@ -23,7 +23,7 @@ class UserManagementController extends Controller
         $users = User::with(['role', 'tenant'])->paginate(10);
         $roles = Role::all();
         
-        return view('users.dashboard-style', compact('users', 'roles'));
+        return view('users.index', compact('users', 'roles'));
     }
 
     /**

@@ -730,7 +730,7 @@
         <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <a href="#" class="sidebar-logo">
+                <a href="{{ url('/dashboard') }}" class="sidebar-logo">
                     <div class="sidebar-logo-icon">CI</div>
                     <span class="sidebar-logo-text">CollaborInbox</span>
                 </a>
@@ -760,14 +760,17 @@
                 <a href="{{ route('dispositions.dashboard') }}" class="nav-item active">
                     <span class="nav-item-icon">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
-                            <line x1="7" y1="7" x2="7.01" y2="7"/>
+                            <rect x="3" y="3" width="7" height="7"/>
+                            <rect x="14" y="3" width="7" height="7"/>
+                            <rect x="14" y="14" width="7" height="7"/>
+                            <rect x="3" y="14" width="7" height="7"/>
                         </svg>
                     </span>
                     <span class="nav-item-text">Dispositions</span>
                 </a>
                 
-                <a href="#" class="nav-item">
+                {{-- Analytics - Coming Soon --}}
+                {{-- <a href="#" class="nav-item">
                     <span class="nav-item-icon">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M2 20h.01"/>
@@ -778,19 +781,7 @@
                         </svg>
                     </span>
                     <span class="nav-item-text">Analytics</span>
-                </a>
-                
-                <a href="#" class="nav-item">
-                    <span class="nav-item-icon">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                            <circle cx="9" cy="7" r="4"/>
-                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                        </svg>
-                    </span>
-                    <span class="nav-item-text">Customers</span>
-                </a>
+                </a> --}}
                 
                 @if(auth()->check() && auth()->user()->is_admin)
                 <a href="{{ url('/users') }}" class="nav-item">
@@ -806,7 +797,8 @@
                 </a>
                 @endif
                 
-                <a href="#" class="nav-item">
+                {{-- Other Features - Coming Soon --}}
+                {{-- <a href="#" class="nav-item">
                     <span class="nav-item-icon">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="12" cy="12" r="3"/>
@@ -815,7 +807,7 @@
                         </svg>
                     </span>
                     <span class="nav-item-text">Settings</span>
-                </a>
+                </a> --}}
             </nav>
             
             <div class="sidebar-footer">
