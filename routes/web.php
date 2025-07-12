@@ -21,9 +21,10 @@ use App\Http\Controllers\ThreadController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\AttachmentController;
-use App\Http\Controllers\AuthController;
+// use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\Auth\SignupController;
 
 /*
 |--------------------------------------------------------------------------
@@ -42,27 +43,12 @@ Route::get('/central', function () {
 })->name('central.home');
 
 // Default welcome page route
-Route::get('/', function (Request $request, TenantManager $tenantManager) {
+Route::get('/', function (Request $request) {
     if (Auth::check()) {
         return redirect('/dashboard');
     }
-
-    // Get current protocol, host and port for proper redirection
-    $protocol = $request->secure() ? 'https://' : 'http://';
-    $currentHost = $request->getHost();
-    $port = $request->getPort();
-    $portSuffix = ($port && $port != 80 && $port != 443) ? ':' . $port : '';
     
-    // Log redirection info
-    \Illuminate\Support\Facades\Log::debug('Root route redirection', [
-        'host' => $currentHost,
-        'port' => $port,
-        'subdomain' => $tenantManager->parseSubdomain($currentHost)
-    ]);
-    
-    // Construct full URL to preserve subdomain
-    $redirectUrl = $protocol . $currentHost . $portSuffix . '/login';
-    return redirect()->to($redirectUrl);
+    return redirect('/login');
 });
 
 // Explicit welcome page route
@@ -447,6 +433,11 @@ Route::middleware(['auth'])->group(function() {
 // Agent Management Routes (protected by authentication and tenant middleware)
 Route::get('/agents', [AgentController::class, 'index'])->middleware(['auth', 'tenancy'])->name('agents.index');
 
+// Public Signup Routes
+Route::get('/signup', [SignupController::class, 'show'])->name('signup');
+Route::post('/signup', [SignupController::class, 'store']);
+Route::post('/signup/oauth', [SignupController::class, 'oauth'])->name('signup.oauth');
+
 // Authentication Routes
 Route::get('/login', function (Request $request) {
     // Debug for login page access with more detail
@@ -550,8 +541,47 @@ Route::get('/emergency-logout', function () {
 
 // Dashboard - protected by authentication
 Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->middleware(['auth:sanctum'])
+    ->middleware(['auth'])
     ->name('dashboard');
+
+// Inbox and Email Account Management Routes
+Route::middleware(['auth'])->group(function () {
+    // Main inbox route
+    Route::get('/inbox', [\App\Http\Controllers\SimpleInboxController::class, 'index'])->name('inbox.index');
+    
+    // Individual email routes
+    Route::get('/inbox/email/{id}', [\App\Http\Controllers\SimpleInboxController::class, 'show'])->name('inbox.email.show');
+    Route::post('/inbox/email/{id}/star', [\App\Http\Controllers\SimpleInboxController::class, 'toggleStar'])->name('inbox.email.star');
+    Route::post('/inbox/email/{id}/status', [\App\Http\Controllers\SimpleInboxController::class, 'updateStatus'])->name('inbox.email.status');
+    Route::post('/inbox/email/{id}/assign', [\App\Http\Controllers\SimpleInboxController::class, 'assign'])->name('inbox.email.assign');
+    Route::post('/inbox/email/{id}/disposition', [\App\Http\Controllers\SimpleInboxController::class, 'setDisposition'])->name('inbox.email.disposition');
+    
+    // Email account management
+    Route::prefix('inbox/settings')->name('inbox.settings.')->group(function () {
+        Route::get('/accounts', [\App\Http\Controllers\WorkspaceEmailAccountController::class, 'index'])->name('accounts');
+        Route::get('/accounts/create', [\App\Http\Controllers\WorkspaceEmailAccountController::class, 'create'])->name('accounts.create');
+        Route::post('/accounts', [\App\Http\Controllers\WorkspaceEmailAccountController::class, 'store'])->name('accounts.store');
+        Route::delete('/accounts/{emailAccount}', [\App\Http\Controllers\WorkspaceEmailAccountController::class, 'destroy'])->name('accounts.destroy');
+        Route::post('/accounts/{emailAccount}/toggle', [\App\Http\Controllers\WorkspaceEmailAccountController::class, 'toggle'])->name('accounts.toggle');
+        Route::get('/dispositions', [\App\Http\Controllers\DispositionController::class, 'index'])->name('dispositions');
+    });
+    
+    // Email setup route
+    Route::get('/inbox/email-setup', function () {
+        return view('inbox.email-setup');
+    })->name('inbox.email-setup');
+});
+
+// User Management Routes - protected by authentication
+Route::middleware(['auth'])->prefix('users')->group(function () {
+    Route::get('/', [\App\Http\Controllers\UserManagementController::class, 'index'])->name('users.index');
+    Route::get('/create', [\App\Http\Controllers\UserManagementController::class, 'create'])->name('users.create');
+    Route::post('/', [\App\Http\Controllers\UserManagementController::class, 'store'])->name('users.store');
+    Route::get('/{id}/edit', [\App\Http\Controllers\UserManagementController::class, 'edit'])->name('users.edit');
+    Route::put('/{id}', [\App\Http\Controllers\UserManagementController::class, 'update'])->name('users.update');
+    Route::delete('/{id}', [\App\Http\Controllers\UserManagementController::class, 'destroy'])->name('users.destroy');
+    Route::get('/passwords', [\App\Http\Controllers\UserManagementController::class, 'showPasswords'])->name('users.passwords');
+});
 
 // Development-only direct dashboard access (REMOVE IN PRODUCTION)
 Route::get('/direct-dashboard', function () {
@@ -652,10 +682,52 @@ Route::get('/create-direct-test-user', function () {
     }
 });
 
-// Tenant Management Routes
+// Tenant Management Routes - removed duplicate definitions (already defined above with resource controller)
+
+// Disposition Dashboard Routes - protected by authentication
 Route::middleware(['auth'])->group(function () {
-    Route::get('/tenants', [App\Http\Controllers\TenantController::class, 'index'])->name('tenants.index');
-    Route::post('/tenants', [App\Http\Controllers\TenantController::class, 'store'])->name('tenants.store');
-    Route::put('/tenants/{id}', [App\Http\Controllers\TenantController::class, 'update'])->name('tenants.update');
-    Route::delete('/tenants/{id}', [App\Http\Controllers\TenantController::class, 'destroy'])->name('tenants.destroy');
+    Route::get('/dispositions', [\App\Http\Controllers\DispositionDashboardController::class, 'index'])->name('dispositions.dashboard');
+    Route::get('/dispositions/create', [\App\Http\Controllers\DispositionDashboardController::class, 'create'])->name('dispositions.create');
+    Route::post('/dispositions', [\App\Http\Controllers\DispositionDashboardController::class, 'store'])->name('dispositions.store');
+    Route::get('/dispositions/{id}/edit', [\App\Http\Controllers\DispositionDashboardController::class, 'edit'])->name('dispositions.edit');
+    Route::put('/dispositions/{id}', [\App\Http\Controllers\DispositionDashboardController::class, 'update'])->name('dispositions.update');
+    Route::delete('/dispositions/{id}', [\App\Http\Controllers\DispositionDashboardController::class, 'destroy'])->name('dispositions.destroy');
+    Route::post('/dispositions/{id}/toggle', [\App\Http\Controllers\DispositionDashboardController::class, 'toggle'])->name('dispositions.toggle');
+    Route::post('/dispositions/reorder', [\App\Http\Controllers\DispositionDashboardController::class, 'reorder'])->name('dispositions.reorder');
+});
+
+// Inbox Routes - protected by authentication
+Route::middleware(['auth'])->prefix('inbox')->name('inbox.')->group(function () {
+    // Main inbox
+    Route::get('/', [\App\Http\Controllers\SimpleInboxController::class, 'index'])->name('index');
+    Route::get('/email/{id}', [\App\Http\Controllers\SimpleInboxController::class, 'show'])->name('show');
+    Route::post('/email/{id}/star', [\App\Http\Controllers\SimpleInboxController::class, 'toggleStar'])->name('star');
+    Route::post('/email/{id}/status', [\App\Http\Controllers\SimpleInboxController::class, 'updateStatus'])->name('status');
+    Route::post('/email/{id}/assign', [\App\Http\Controllers\SimpleInboxController::class, 'assign'])->name('assign');
+    Route::post('/email/{id}/disposition', [\App\Http\Controllers\SimpleInboxController::class, 'setDisposition'])->name('disposition');
+    Route::post('/email/{id}/reply', [\App\Http\Controllers\SimpleInboxController::class, 'reply'])->name('reply');
+    Route::get('/attachment/{id}/download', [\App\Http\Controllers\SimpleInboxController::class, 'downloadAttachment'])->name('attachment.download');
+    Route::post('/bulk-action', [\App\Http\Controllers\SimpleInboxController::class, 'bulkAction'])->name('bulk-action');
+    
+    // Email Account Settings
+    Route::prefix('settings')->name('settings.')->group(function () {
+        // Email Accounts
+        Route::get('/accounts', [\App\Http\Controllers\EmailAccountController::class, 'index'])->name('accounts');
+        Route::get('/accounts/create', [\App\Http\Controllers\EmailAccountController::class, 'create'])->name('accounts.create');
+        Route::post('/accounts', [\App\Http\Controllers\EmailAccountController::class, 'store'])->name('accounts.store');
+        Route::get('/accounts/{id}/edit', [\App\Http\Controllers\EmailAccountController::class, 'edit'])->name('accounts.edit');
+        Route::put('/accounts/{id}', [\App\Http\Controllers\EmailAccountController::class, 'update'])->name('accounts.update');
+        Route::delete('/accounts/{id}', [\App\Http\Controllers\EmailAccountController::class, 'destroy'])->name('accounts.destroy');
+        Route::post('/accounts/{id}/toggle', [\App\Http\Controllers\EmailAccountController::class, 'toggle'])->name('accounts.toggle');
+        
+        // Dispositions
+        Route::get('/dispositions', [\App\Http\Controllers\DispositionController::class, 'index'])->name('dispositions');
+        Route::get('/dispositions/create', [\App\Http\Controllers\DispositionController::class, 'create'])->name('dispositions.create');
+        Route::post('/dispositions', [\App\Http\Controllers\DispositionController::class, 'store'])->name('dispositions.store');
+        Route::get('/dispositions/{id}/edit', [\App\Http\Controllers\DispositionController::class, 'edit'])->name('dispositions.edit');
+        Route::put('/dispositions/{id}', [\App\Http\Controllers\DispositionController::class, 'update'])->name('dispositions.update');
+        Route::delete('/dispositions/{id}', [\App\Http\Controllers\DispositionController::class, 'destroy'])->name('dispositions.destroy');
+        Route::post('/dispositions/{id}/toggle', [\App\Http\Controllers\DispositionController::class, 'toggle'])->name('dispositions.toggle');
+        Route::post('/dispositions/reorder', [\App\Http\Controllers\DispositionController::class, 'reorder'])->name('dispositions.reorder');
+    });
 });

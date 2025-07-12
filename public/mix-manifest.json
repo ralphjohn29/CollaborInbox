@@ -1,10 +1,10 @@
 {
-    "/js/babel-helpers.js": "/js/babel-helpers.js",
-    "/js/app.js": "/js/app.js",
-    "/css/app.css": "/css/app.css",
-    "/js/debug.js": "/js/debug.js",
-    "/js/WebSocketExample.js": "/js/WebSocketExample.js",
-    "/css/auth.css": "/css/auth.css",
-    "/css/websocket.css": "/css/websocket.css",
-    "/css/role-management.css": "/css/role-management.css"
+    "/js/babel-helpers.js": "/js/babel-helpers.js?id=7f94e4bd312ef999d19a2bfc46ea006a",
+    "/js/app.js": "/js/app.js?id=54ac2fbaa86bfa2b46c466281bcd43aa",
+    "/css/app.css": "/css/app.css?id=da42b4de7525e19645711ff87262e3d9",
+    "/js/debug.js": "/js/debug.js?id=d1f906d8241ca498ccbff490bf044e4d",
+    "/js/WebSocketExample.js": "/js/WebSocketExample.js?id=1b34e563eff0c38ab8eb695785769c77",
+    "/css/auth.css": "/css/auth.css?id=9983897ea8a5e28060f324902023bf78",
+    "/css/websocket.css": "/css/websocket.css?id=5ddb70a4e3ddb24442b4aaef28541a81",
+    "/css/role-management.css": "/css/role-management.css?id=f40b4a675934b1f41e38218857f6e46f"
 }

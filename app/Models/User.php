@@ -22,6 +22,7 @@ class User extends Authenticatable
         'email',
         'password',
         'tenant_id',
+        'workspace_id',
         'role_id',
         'is_active',
         'is_admin',
@@ -55,6 +56,14 @@ class User extends Authenticatable
     public function tenant()
     {
         return $this->belongsTo(Tenant::class);
+    }
+    
+    /**
+     * Get the workspace that the user belongs to
+     */
+    public function workspace()
+    {
+        return $this->belongsTo(Workspace::class);
     }
 
     /**

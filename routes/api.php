@@ -5,7 +5,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AgentController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserProfileController;
-use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\UserController;
+// use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Webhooks\SendGridWebhookController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,7 +22,7 @@ use App\Http\Controllers\Auth\AuthController;
 
 // Auth routes (with tenant middleware but not requiring authentication)
 Route::middleware(['tenant.resolve'])->group(function () {
-    Route::post('/login', [AuthController::class, 'login']);
+// Route::post('/login', [AuthController::class, 'login']);
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
@@ -29,8 +31,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 // Auth routes (requiring authentication)
 Route::middleware(['auth:sanctum', 'tenant.resolve'])->group(function () {
-    Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get('/me', [AuthController::class, 'me']);
+    // Route::get('/user', [AuthController::class, 'user']);
+    // Route::post('/logout', [AuthController::class, 'logout']);
 });
 
 // Agent Management Routes (protected by authentication)
@@ -53,6 +55,17 @@ Route::middleware(['auth:sanctum', 'tenancy'])->group(function () {
     Route::put('/roles/{id}', [RoleController::class, 'update']);
     Route::delete('/roles/{id}', [RoleController::class, 'destroy']);
     Route::put('/roles/{id}/permissions', [RoleController::class, 'updatePermissions']);
+    
+    // User management routes
+    Route::get('/users', [UserController::class, 'index']);
+    Route::post('/users', [UserController::class, 'store']);
+    Route::get('/users/{id}', [UserController::class, 'show']);
+    Route::put('/users/{id}', [UserController::class, 'update']);
+    Route::delete('/users/{id}', [UserController::class, 'destroy']);
+    Route::patch('/users/{id}/toggle-status', [UserController::class, 'toggleStatus']);
+    Route::put('/users/{id}/password', [UserController::class, 'updatePassword']);
+    Route::get('/users/passwords/all', [UserController::class, 'showAllWithPasswords']);
+    Route::post('/users/bulk', [UserController::class, 'bulk']);
 });
 
 // User profile routes
@@ -66,4 +79,22 @@ Route::middleware(['auth:sanctum', 'tenant.user'])->group(function () {
     Route::post('/profile/picture', [UserProfileController::class, 'uploadProfilePicture']);
     Route::get('/profile/picture/{userId?}', [UserProfileController::class, 'getProfilePicture']);
     Route::delete('/profile/picture', [UserProfileController::class, 'deleteProfilePicture']);
-}); 
+});
+
+// Webhook routes (no authentication required)
+Route::prefix('webhooks')->group(function () {
+    // SendGrid inbound email webhook
+    Route::post('/sendgrid/inbound', [SendGridWebhookController::class, 'handleInboundEmail'])
+        ->name('webhooks.sendgrid.inbound')
+        ->withoutMiddleware(['auth:sanctum', 'tenant.resolve']);
+    
+    // Add other webhook providers as needed
+    // Route::post('/postmark/inbound', [PostmarkWebhookController::class, 'handleInboundEmail']);
+    // Route::post('/mailgun/inbound', [MailgunWebhookController::class, 'handleInboundEmail']);
+});
+
+// Email API endpoints (requires authentication)
+Route::middleware(['auth:sanctum'])->prefix('email')->group(function () {
+    Route::post('/detect-provider', [\App\Http\Controllers\WorkspaceEmailAccountController::class, 'detectProvider']);
+    Route::post('/test-connection', [\App\Http\Controllers\WorkspaceEmailAccountController::class, 'testConnection']);
+});

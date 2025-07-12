@@ -32,8 +32,8 @@ body {
     background-color: #2779bd;
 }
 
-/* Base styles */
-html, body {
+/* Base styles - scoped to not interfere with dashboard */
+html, body:not(.dashboard-page) {
     margin: 0;
     padding: 0;
     min-height: 100vh;

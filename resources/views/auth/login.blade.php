@@ -71,6 +71,7 @@
                 
                 <div class="login-footer">
                     <p class="help-text">Having trouble logging in? Contact your administrator.</p>
+                    <p class="signup-link">Don't have an account? <a href="{{ route('signup') }}">Sign up</a></p>
                 </div>
             </div>
         </div>

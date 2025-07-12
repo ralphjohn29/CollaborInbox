@@ -91,4 +91,39 @@ class Tenant extends Model implements TenantContract
     {
         return $this->tenancy_db_name;
     }
+
+    /**
+     * Get internal data.
+     *
+     * @param string $key
+     * @return mixed
+     */
+    public function getInternal(string $key)
+    {
+        return $this->getAttribute($key);
+    }
+
+    /**
+     * Set internal data.
+     *
+     * @param string $key
+     * @param mixed $value
+     * @return $this
+     */
+    public function setInternal(string $key, $value)
+    {
+        $this->setAttribute($key, $value);
+        return $this;
+    }
+
+    /**
+     * Run a callback in this tenant's context.
+     *
+     * @param callable $callback
+     * @return mixed
+     */
+    public function run(callable $callback)
+    {
+        return tenancy()->run($callback, $this);
+    }
 }

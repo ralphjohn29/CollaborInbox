@@ -8,9 +8,7 @@
     <title>@yield('title', 'CollaborInbox')</title>
     
     <!-- Styles -->
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}?v={{ time() }}">
     @yield('styles')
     
     <!-- Babel Helpers (must be loaded before other scripts) -->
@@ -76,7 +74,7 @@
     </div>
     
     <!-- Scripts -->
-    <script src="{{ asset('js/app.js') }}"></script>
+    <script src="{{ asset('js/app.js') }}?v={{ time() }}"></script>
     @yield('scripts')
 </body>
 </html> 

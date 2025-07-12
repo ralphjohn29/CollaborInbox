@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('domain')->unique();
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }

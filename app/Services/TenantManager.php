@@ -33,6 +33,20 @@ class TenantManager
         
         if (!$subdomain) {
             Log::debug('No subdomain found in request');
+            
+            // In development, if no subdomain, use the default tenant
+            if (app()->environment('local') && $this->shouldUseFallbackTenant($request)) {
+                $tenant = $this->getDefaultTenant();
+                if ($tenant) {
+                    Log::debug('Using default tenant for development', [
+                        'tenant_id' => $tenant->id,
+                        'tenant_name' => $tenant->name
+                    ]);
+                    $this->setCurrentTenant($tenant);
+                    return $tenant;
+                }
+            }
+            
             return null;
         }
         
@@ -245,4 +259,45 @@ class TenantManager
         app()->forgetInstance('tenant');
         config(['tenant.id' => null]);
     }
-} 
+    
+    /**
+     * Get the default tenant for development
+     * 
+     * @return Tenant|null
+     */
+    public function getDefaultTenant()
+    {
+        return Cache::remember('default_tenant', 60, function () {
+            // First try to get the tenant named 'Demo Company'
+            $tenant = Tenant::where('name', 'Demo Company')->first();
+            
+            if ($tenant) {
+                return $tenant;
+            }
+            
+            // Otherwise, just get the first active tenant
+            return Tenant::where('is_active', true)->first();
+        });
+    }
+    
+    /**
+     * Check if we should use fallback tenant for this request
+     * 
+     * @param Request $request
+     * @return bool
+     */
+    private function shouldUseFallbackTenant(Request $request)
+    {
+        // Only use fallback for authenticated routes that need tenant context
+        // Skip for public routes, auth routes, etc.
+        $path = $request->path();
+        $needsTenant = (
+            str_starts_with($path, 'inbox') ||
+            str_starts_with($path, 'dashboard') ||
+            str_starts_with($path, 'api/tenant') ||
+            str_starts_with($path, 'settings')
+        );
+        
+        return $needsTenant;
+    }
+}
