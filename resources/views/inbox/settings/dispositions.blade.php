@@ -565,6 +565,13 @@ function toggleDisposition(dispositionId) {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
             'Content-Type': 'application/json'
         }
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Toggle response:', data);
+    })
+    .catch(error => {
+        console.error('Toggle error:', error);
     });
 }
 
@@ -584,6 +591,13 @@ const sortable = Sortable.create(dispositionsList, {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({ dispositions: dispositionIds })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Reorder response:', data);
+        })
+        .catch(error => {
+            console.error('Reorder error:', error);
         });
     }
 });

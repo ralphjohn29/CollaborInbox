@@ -1205,10 +1205,16 @@ document.getElementById('dispositionForm').addEventListener('submit', function(e
         headers: {
             'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>',
             'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'  // This tells Laravel it's an AJAX request
         },
         body: formData
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
     .then(data => {
         if (data.success) {
             location.reload();
