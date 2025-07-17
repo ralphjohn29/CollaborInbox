@@ -54,6 +54,16 @@
             <div style="font-size: 0.75rem; color: hsl(var(--muted-foreground)); font-weight: 600; margin-bottom: 0.5rem;">
                 EMAIL SETTINGS
             </div>
+            <a href="<?php echo e(route('inbox.channels.connect')); ?>" class="nav-item <?php echo e(request()->routeIs('inbox.channels.*') ? 'active' : ''); ?>">
+                <span class="nav-item-icon">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L12 12M12 12L16 8M12 12L8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M4 12C4 13.5913 4.63214 15.1174 5.75736 16.2426C6.88258 17.3679 8.4087 18 10 18C11.5913 18 13.1174 17.3679 14.2426 16.2426C15.3679 15.1174 16 13.5913 16 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </span>
+                <span class="nav-item-text">Connect Channel</span>
+            </a>
+            
             <a href="<?php echo e(route('inbox.settings.accounts')); ?>" class="nav-item <?php echo e(request()->routeIs('inbox.settings.accounts*') ? 'active' : ''); ?>">
                 <span class="nav-item-icon">
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">

@@ -12,6 +12,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Services\TenantManager;
+use App\Services\MicrosoftGraphEmailFetcher;
+use Illuminate\Support\Facades\Log;
 
 class InboxController extends Controller
 {
@@ -28,7 +30,8 @@ class InboxController extends Controller
      */
     private function getCurrentWorkspaceId()
     {
-        return session('workspace_id') ?? Auth::user()->workspaces()->first()->id ?? 1;
+        // This is more robust. It checks the session, then the user's direct workspace_id, and finally defaults to 1.
+        return session('workspace_id') ?? (Auth::user() ? Auth::user()->workspace_id : null) ?? 1;
     }
 
     public function index(Request $request)
@@ -41,6 +44,9 @@ class InboxController extends Controller
 
         // Get the current workspace ID
         $workspaceId = $this->getCurrentWorkspaceId();
+        
+        // Auto-fetch new emails on page load
+        $this->autoFetchEmails($tenant);
         
         // Get email accounts
         $emailAccounts = EmailAccount::where('tenant_id', $tenant->id)
@@ -322,5 +328,35 @@ class InboxController extends Controller
         }
 
         return response()->json(['success' => true, 'affected' => $emails->count()]);
+    }
+    
+    /**
+     * Automatically fetch new emails on page load
+     */
+    private function autoFetchEmails($tenant)
+    {
+        try {
+            // Get all active email accounts for this tenant
+            $accounts = EmailAccount::where('tenant_id', $tenant->id)
+                ->where('is_active', true)
+                ->get();
+            
+            foreach ($accounts as $account) {
+                if ($account->provider === 'outlook' && $account->oauth_access_token) {
+                    $fetcher = new MicrosoftGraphEmailFetcher($account);
+                    $result = $fetcher->fetchEmails(20); // Fetch up to 20 new emails
+                    
+                    if ($result['count'] > 0) {
+                        Log::info("Auto-fetched {$result['count']} new emails for {$account->email_address}");
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            // Don't throw error to user, just log it
+            Log::error('Error auto-fetching emails', [
+                'tenant_id' => $tenant->id,
+                'error' => $e->getMessage()
+            ]);
+        }
     }
 }

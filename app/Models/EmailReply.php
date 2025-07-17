@@ -52,4 +52,9 @@ class EmailReply extends Model
     {
         $this->update(['status' => 'failed']);
     }
+
+    public function markAsSending()
+    {
+        $this->update(['status' => 'sending']);
+    }
 }

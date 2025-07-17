@@ -12,7 +12,13 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // Run the email fetch command every 5 minutes
+        // Run the email sync command every minute for real-time updates
+        $schedule->command('emails:sync')
+                 ->everyMinute()
+                 ->withoutOverlapping()
+                 ->appendOutputTo(storage_path('logs/email-sync.log'));
+                 
+        // Keep the old fetch command for backward compatibility
         $schedule->command('fetch:emails')
                  ->everyFiveMinutes()
                  ->withoutOverlapping()

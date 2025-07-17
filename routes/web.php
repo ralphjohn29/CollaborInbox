@@ -570,6 +570,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/inbox/email-setup', function () {
         return view('inbox.email-setup');
     })->name('inbox.email-setup');
+    
+    // Email fetch route
+    Route::post('/inbox/fetch-emails', [\App\Http\Controllers\EmailFetchController::class, 'fetchEmails'])->name('inbox.fetch-emails');
+    
+    // Outlook OAuth routes
+    Route::get('/auth/outlook', [\App\Http\Controllers\OutlookAuthController::class, 'redirectToProvider'])->name('outlook.auth');
+    Route::get('/auth/m365/callback', [\App\Http\Controllers\OutlookAuthController::class, 'handleProviderCallback'])->name('outlook.callback');
+    Route::delete('/auth/outlook/{id}/disconnect', [\App\Http\Controllers\OutlookAuthController::class, 'disconnect'])->name('outlook.disconnect');
 });
 
 // User Management Routes - protected by authentication
@@ -708,6 +716,20 @@ Route::middleware(['auth'])->prefix('inbox')->name('inbox.')->group(function () 
     Route::post('/email/{id}/reply', [\App\Http\Controllers\SimpleInboxController::class, 'reply'])->name('reply');
     Route::get('/attachment/{id}/download', [\App\Http\Controllers\SimpleInboxController::class, 'downloadAttachment'])->name('attachment.download');
     Route::post('/bulk-action', [\App\Http\Controllers\SimpleInboxController::class, 'bulkAction'])->name('bulk-action');
+    
+    // Email Channel Management
+    Route::prefix('channels')->name('channels.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\EmailChannelController::class, 'index'])->name('index');
+        Route::get('/connect', [\App\Http\Controllers\EmailChannelController::class, 'create'])->name('connect');
+        Route::get('/gmail', [\App\Http\Controllers\EmailChannelController::class, 'gmailSetup'])->name('gmail');
+        Route::get('/outlook', [\App\Http\Controllers\EmailChannelController::class, 'outlookSetup'])->name('outlook');
+        Route::get('/other', [\App\Http\Controllers\EmailChannelController::class, 'otherSetup'])->name('other');
+        Route::post('/gmail', [\App\Http\Controllers\EmailChannelController::class, 'storeGmail'])->name('gmail.store');
+        Route::post('/outlook', [\App\Http\Controllers\EmailChannelController::class, 'storeOutlook'])->name('outlook.store');
+        Route::post('/other', [\App\Http\Controllers\EmailChannelController::class, 'storeOther'])->name('other.store');
+        Route::post('/test', [\App\Http\Controllers\EmailChannelController::class, 'testConnection'])->name('test');
+        Route::delete('/{id}', [\App\Http\Controllers\EmailChannelController::class, 'destroy'])->name('destroy');
+    });
     
     // Email Account Settings
     Route::prefix('settings')->name('settings.')->group(function () {

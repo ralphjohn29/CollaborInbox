@@ -24,9 +24,7 @@ class Email extends Model
         'body_html',
         'body_text',
         'cc',
-        'cc_email',
         'bcc',
-        'bcc_email',
         'reply_to',
         'headers',
         'attachments',
@@ -171,5 +169,97 @@ class Email extends Model
     {
         $text = $this->body_text ?: strip_tags($this->body_html);
         return strlen($text) > $length ? substr($text, 0, $length) . '...' : $text;
+    }
+
+    /**
+     * Generate avatar initials from sender name or email
+     */
+    public function getAvatarInitials()
+    {
+        $name = $this->from_name ?: $this->from_email;
+        
+        // Handle empty name
+        if (empty($name)) {
+            return '?';
+        }
+        
+        if (str_contains($name, '@')) {
+            // If it's an email, use the part before @
+            $emailParts = explode('@', $name);
+            $name = $emailParts[0] ?? $name;
+        }
+        
+        // Clean up the name - remove special characters but keep spaces
+        $name = preg_replace('/[^a-zA-Z\s]/', ' ', $name);
+        $name = preg_replace('/\s+/', ' ', $name); // Replace multiple spaces with single space
+        $name = trim($name);
+        
+        // Handle empty name after cleaning
+        if (empty($name)) {
+            return '?';
+        }
+        
+        // Split by spaces
+        $parts = explode(' ', $name);
+        $parts = array_filter($parts); // Remove empty parts
+        $parts = array_values($parts); // Reindex array
+        
+        if (count($parts) >= 2) {
+            // Take first letter of first and second parts (like Ralph John = RJ)
+            $first = isset($parts[0]) && strlen($parts[0]) > 0 ? substr($parts[0], 0, 1) : '';
+            $second = isset($parts[1]) && strlen($parts[1]) > 0 ? substr($parts[1], 0, 1) : '';
+            
+            // If we have both first and second name, use them
+            if (!empty($first) && !empty($second)) {
+                return strtoupper($first . $second);
+            }
+            
+            // If only first name, try to get first and last part
+            $last = isset($parts[count($parts) - 1]) && strlen($parts[count($parts) - 1]) > 0 ? substr($parts[count($parts) - 1], 0, 1) : '';
+            if (!empty($first) && !empty($last) && $first !== $last) {
+                return strtoupper($first . $last);
+            }
+        }
+        
+        // Single name - take first two letters
+        if (count($parts) === 1 && isset($parts[0]) && strlen($parts[0]) >= 2) {
+            return strtoupper(substr($parts[0], 0, 2));
+        }
+        
+        // Single name - take first letter
+        if (count($parts) === 1 && isset($parts[0]) && strlen($parts[0]) >= 1) {
+            return strtoupper(substr($parts[0], 0, 1));
+        }
+        
+        // Final fallback
+        return strtoupper(substr($name, 0, 1)) ?: '?';
+    }
+
+    /**
+     * Generate a subtle, professional color for the avatar based on sender
+     */
+    public function getAvatarColor()
+    {
+        // More subtle, professional color palette
+        $colors = [
+            '#6366f1', // Indigo
+            '#8b5cf6', // Violet  
+            '#06b6d4', // Cyan
+            '#10b981', // Emerald
+            '#f59e0b', // Amber
+            '#ef4444', // Red
+            '#ec4899', // Pink
+            '#84cc16', // Lime
+            '#6b7280', // Gray
+            '#14b8a6', // Teal
+            '#f97316', // Orange
+            '#3b82f6', // Blue
+        ];
+        
+        $email = $this->from_email ?: 'unknown@example.com';
+        $hash = crc32($email);
+        $index = abs($hash) % count($colors);
+        
+        return $colors[$index];
     }
 }

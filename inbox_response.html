@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="csrf-token" content="gXXZ1fnlTmlL87WzGcpBaRHzH6Spz2KKHw97DEX4">
+    <title>Login - CollaborInbox</title>
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="http://localhost:8000/css/app.css?v=1752707053">
+        <link rel="stylesheet" href="http://localhost:8000/css/auth.css">
+    <style>
+        .emergency-logout {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            font-size: 12px;
+            cursor: pointer;
+            z-index: 1000;
+        }
+        .emergency-logout:hover {
+            background-color: #e9ecef;
+        }
+    </style>
+    
+    <!-- Babel Helpers (must be loaded before other scripts) -->
+    <script src="http://localhost:8000/js/babel-helpers.js"></script>
+    
+    <script>
+        // Global emergency logout function
+        window.emergencyLogout = function() {
+            // Clear localStorage data
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('user');
+            localStorage.removeItem('tenant');
+            
+            // Reset fetch if it was overridden
+            if (window.originalFetch) {
+                window.fetch = window.originalFetch;
+            }
+            
+            // Clear cookies
+            document.cookie.split(";").forEach(function(c) {
+                document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+            });
+            
+            // Redirect to login with special parameter
+            window.location.href = '/login?force_logout=1&t=' + new Date().getTime();
+            
+            return false; // Prevent default anchor behavior if used in href
+        };
+    </script>
+</head>
+<body class="login-page">
+    <div id="app">
+        <!-- Flash Messages -->
+        
+        
+        
+                
+            <div class="container">
+        
+        <div class="login-container">
+            <div class="login-form">
+                <div class="login-header">
+                    <h1>CollaborInbox</h1>
+                    <p>Please log in to your account</p>
+                </div>
+                
+                <form method="POST" action="http://localhost:8000/login">
+                    <input type="hidden" name="_token" value="gXXZ1fnlTmlL87WzGcpBaRHzH6Spz2KKHw97DEX4" autocomplete="off">                    
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" value="" required autocomplete="email" autofocus />
+                                            </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required autocomplete="current-password" />
+                                            </div>
+                    
+                    <div class="form-group remember-me">
+                        <input type="checkbox" id="remember" name="remember"  />
+                        <label for="remember">Remember me</label>
+                    </div>
+                    
+                    <button type="submit" class="primary-button">
+                        Log In
+                    </button>
+                </form>
+                
+                <div class="login-footer">
+                    <p class="help-text">Having trouble logging in? Contact your administrator.</p>
+                    <p class="signup-link">Don't have an account? <a href="http://localhost:8000/signup">Sign up</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="emergency-logout" id="emergency-logout">
+        Emergency Logout (Stuck in login loop?)
+    </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="http://localhost:8000/js/app.js?v=1752707053"></script>
+        <script>
+        // Emergency logout function
+        document.getElementById('emergency-logout').addEventListener('click', function() {
+            // Clear any session cookies
+            document.cookie.split(";").forEach(function(c) {
+                document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+            });
+            
+            // Force reload from server, not cache
+            window.location.href = '/login?nocache=' + new Date().getTime();
+            
+            alert('Authentication data cleared! Page will reload.');
+        });
+    </script>
+</body>
+</html> 

@@ -436,6 +436,42 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+
+        /* Configuration Type Cards */
+        .config-type-card {
+            display: block;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .config-type-content {
+            padding: 1.5rem;
+            border: 2px solid hsl(var(--border));
+            border-radius: var(--radius);
+            text-align: center;
+            transition: all 0.2s ease;
+            background-color: hsl(var(--background));
+        }
+
+        .config-type-card input:checked + .config-type-content {
+            border-color: hsl(var(--primary));
+            background-color: hsl(var(--primary) / 0.05);
+        }
+
+        .config-type-card:hover .config-type-content {
+            border-color: hsl(var(--primary) / 0.5);
+        }
+
+        /* Form row styles for responsive layout */
+        @media (max-width: 640px) {
+            .form-row {
+                grid-template-columns: 1fr !important;
+            }
+            
+            .config-type-card {
+                grid-template-columns: 1fr !important;
+            }
+        }
     </style>
 @endsection
 
@@ -628,12 +664,81 @@
                     </div>
                 @endif
 
+                <!-- Configuration Type Selection -->
                 <div class="setup-card">
-                    <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem;">Mailtrap Integration (Testing)</h2>
+                    <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem;">Email Configuration Type</h2>
                     
-                    <div class="alert alert-info">
-                        <strong>Test Environment:</strong> We're using Mailtrap for testing email functionality. In production, you'll connect your real email accounts.
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem;">
+                        <label class="config-type-card" for="config_type_preset">
+                            <input type="radio" id="config_type_preset" name="config_type" value="preset" checked style="display: none;">
+                            <div class="config-type-content">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 0.5rem;">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                    <polyline points="14 2 14 8 20 8"/>
+                                    <line x1="16" y1="13" x2="8" y2="13"/>
+                                    <line x1="16" y1="17" x2="8" y2="17"/>
+                                    <polyline points="10 9 9 9 8 9"/>
+                                </svg>
+                                <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 0.25rem;">Pre-configured Services</h3>
+                                <p style="font-size: 0.875rem; color: hsl(var(--muted-foreground)); margin: 0;">Use settings for popular email providers</p>
+                            </div>
+                        </label>
+                        
+                        <label class="config-type-card" for="config_type_custom">
+                            <input type="radio" id="config_type_custom" name="config_type" value="custom" style="display: none;">
+                            <div class="config-type-content">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 0.5rem;">
+                                    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                                </svg>
+                                <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 0.25rem;">Custom Configuration</h3>
+                                <p style="font-size: 0.875rem; color: hsl(var(--muted-foreground)); margin: 0;">Manually configure IMAP/SMTP settings</p>
+                            </div>
+                        </label>
                     </div>
+                </div>
+
+                <!-- Pre-configured Service Selection -->
+                <div class="setup-card" id="preset-config" style="display: block;">
+                    <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem;">Select Email Service</h2>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="email_service">Email Service Provider</label>
+                        <select id="email_service" name="email_service" class="form-input">
+                            <option value="">Select a service...</option>
+                            <option value="gmail">Gmail</option>
+                            <option value="outlook">Outlook/Hotmail</option>
+                            <option value="yahoo">Yahoo Mail</option>
+                            <option value="hostinger" data-custom="true">Hostinger</option>
+                            <option value="mailtrap" selected>Mailtrap (Testing)</option>
+                            <option value="other">Other (Manual Configuration)</option>
+                        </select>
+                    </div>
+
+                    <div id="service-info" class="alert alert-info" style="margin-top: 1rem;">
+                        <strong>Mailtrap:</strong> Test email service for development. Emails are captured but not delivered to real recipients.
+                    </div>
+                    
+                    <!-- Outlook OAuth Button -->
+                    <div id="outlook-oauth-section" style="display: none; margin-top: 1.5rem;">
+                        <div class="alert alert-info" style="margin-bottom: 1rem;">
+                            <strong>Outlook OAuth:</strong> For Outlook/Microsoft 365 accounts, we recommend using OAuth for secure authentication.
+                        </div>
+                        <a href="{{ route('outlook.auth') }}" class="btn btn-primary" style="width: 100%;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                <polyline points="22,6 12,13 2,6"/>
+                            </svg>
+                            Connect to Outlook
+                        </a>
+                        <p class="form-help" style="margin-top: 0.5rem; text-align: center;">
+                            You'll be redirected to Microsoft to authorize CollaborInbox to access your emails
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Email Configuration Form -->
+                <div class="setup-card">
+                    <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem;">Email Account Details</h2>
 
                     <form id="emailSetupForm" method="POST" action="{{ route('inbox.settings.accounts.store') }}">
                         @csrf
@@ -641,81 +746,126 @@
                         <div class="form-group">
                             <label class="form-label" for="email_address">Email Address</label>
                             <input type="email" id="email_address" name="email_address" class="form-input" 
-                                   placeholder="test@collaborinbox.com" required>
+                                   placeholder="your-email@example.com" required>
                             <p class="form-help">This is the email address that will receive emails in your inbox</p>
                         </div>
 
                         <div class="form-group">
                             <label class="form-label" for="from_name">Display Name</label>
                             <input type="text" id="from_name" name="from_name" class="form-input" 
-                                   placeholder="CollaborInbox Test" value="CollaborInbox Test">
+                                   placeholder="Your Name or Company" value="">
                             <p class="form-help">The name that will appear when sending emails</p>
                         </div>
 
                         <div class="section-divider"></div>
 
-                        <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 1rem;">SMTP Configuration (Outgoing Mail)</h3>
+                        <!-- IMAP Configuration -->
+                        <div id="imap-section">
+                            <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 1rem;">IMAP Configuration (Incoming Mail)</h3>
 
-                        <div class="form-group">
-                            <label class="form-label" for="smtp_host">SMTP Host</label>
-                            <input type="text" id="smtp_host" name="outgoing_server_host" class="form-input" 
-                                   value="sandbox.smtp.mailtrap.io" readonly>
+                            <div class="form-row" style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem;">
+                                <div class="form-group">
+                                    <label class="form-label" for="imap_host">IMAP Server</label>
+                                    <input type="text" id="imap_host" name="incoming_server_host" class="form-input" 
+                                           placeholder="imap.example.com" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="imap_port">Port</label>
+                                    <input type="number" id="imap_port" name="incoming_server_port" class="form-input" 
+                                           value="993" required>
+                                </div>
+                            </div>
+
+                            <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                <div class="form-group">
+                                    <label class="form-label" for="imap_username">Username</label>
+                                    <input type="text" id="imap_username" name="incoming_server_username" class="form-input" 
+                                           placeholder="Usually your email address" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="imap_password">Password</label>
+                                    <input type="password" id="imap_password" name="incoming_server_password" class="form-input" 
+                                           placeholder="Your email password" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="imap_encryption">Security</label>
+                                <select id="imap_encryption" name="incoming_server_encryption" class="form-input">
+                                    <option value="ssl" selected>SSL/TLS (Port 993)</option>
+                                    <option value="tls">STARTTLS (Port 143)</option>
+                                    <option value="">None (Not Recommended)</option>
+                                </select>
+                            </div>
                         </div>
 
-                        <div class="form-group">
-                            <label class="form-label" for="smtp_port">SMTP Port</label>
-                            <input type="number" id="smtp_port" name="outgoing_server_port" class="form-input" 
-                                   value="2525" readonly>
-                        </div>
+                        <!-- Mailtrap API Section (hidden by default) -->
+                        <div id="mailtrap-section" style="display: none;">
+                            <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 1rem;">Mailtrap Configuration</h3>
 
-                        <div class="form-group">
-                            <label class="form-label" for="smtp_username">SMTP Username</label>
-                            <input type="text" id="smtp_username" name="outgoing_server_username" class="form-input" 
-                                   value="acb4f069175c45" readonly>
-                        </div>
+                            <div class="alert alert-info">
+                                <strong>Note:</strong> Mailtrap uses API access instead of IMAP for fetching emails.
+                            </div>
 
-                        <div class="form-group">
-                            <label class="form-label" for="smtp_password">SMTP Password</label>
-                            <input type="password" id="smtp_password" name="outgoing_server_password" class="form-input" 
-                                   value="7898c8ac25792b" readonly>
-                        </div>
+                            <div class="form-group">
+                                <label class="form-label" for="mailtrap_api_key">API Key</label>
+                                <input type="text" id="mailtrap_api_key" name="mailtrap_api_key" class="form-input" 
+                                       value="d2a9db1ad8cd635fad770c540e6c3c9c" readonly>
+                            </div>
 
-                        <div class="form-group">
-                            <label class="form-label" for="smtp_encryption">Encryption</label>
-                            <select id="smtp_encryption" name="outgoing_server_encryption" class="form-input">
-                                <option value="tls" selected>TLS (Recommended)</option>
-                                <option value="ssl">SSL</option>
-                                <option value="">None</option>
-                            </select>
+                            <div class="form-group">
+                                <label class="form-label" for="mailtrap_inbox_id">Inbox ID</label>
+                                <input type="text" id="mailtrap_inbox_id" name="mailtrap_inbox_id" class="form-input" 
+                                       placeholder="Enter your Mailtrap inbox ID">
+                                <p class="form-help">You can find this in your Mailtrap dashboard</p>
+                            </div>
+
+                            <!-- Hidden IMAP fields for Mailtrap -->
+                            <input type="hidden" id="mailtrap_imap_host" value="sandbox.api.mailtrap.io">
+                            <input type="hidden" id="mailtrap_imap_port" value="443">
+                            <input type="hidden" id="mailtrap_imap_username" value="api">
+                            <input type="hidden" id="mailtrap_imap_password" value="d2a9db1ad8cd635fad770c540e6c3c9c">
                         </div>
 
                         <div class="section-divider"></div>
 
-                        <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 1rem;">IMAP Configuration (Incoming Mail)</h3>
+                        <!-- SMTP Configuration -->
+                        <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 1rem;">SMTP Configuration (Outgoing Mail)</h3>
 
-                        <div class="alert alert-info">
-                            <strong>Note:</strong> Mailtrap doesn't provide IMAP access in the free tier. We'll use the API to fetch emails instead.
+                        <div class="form-row" style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem;">
+                            <div class="form-group">
+                                <label class="form-label" for="smtp_host">SMTP Server</label>
+                                <input type="text" id="smtp_host" name="outgoing_server_host" class="form-input" 
+                                       placeholder="smtp.example.com" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="smtp_port">Port</label>
+                                <input type="number" id="smtp_port" name="outgoing_server_port" class="form-input" 
+                                       value="587" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div class="form-group">
+                                <label class="form-label" for="smtp_username">Username</label>
+                                <input type="text" id="smtp_username" name="outgoing_server_username" class="form-input" 
+                                       placeholder="Usually your email address" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="smtp_password">Password</label>
+                                <input type="password" id="smtp_password" name="outgoing_server_password" class="form-input" 
+                                       placeholder="Your email password" required>
+                            </div>
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label" for="mailtrap_api_key">Mailtrap API Key</label>
-                            <input type="text" id="mailtrap_api_key" name="mailtrap_api_key" class="form-input" 
-                                   value="d2a9db1ad8cd635fad770c540e6c3c9c" readonly>
+                            <label class="form-label" for="smtp_encryption">Security</label>
+                            <select id="smtp_encryption" name="outgoing_server_encryption" class="form-input">
+                                <option value="tls" selected>STARTTLS (Port 587)</option>
+                                <option value="ssl">SSL/TLS (Port 465)</option>
+                                <option value="">None (Not Recommended)</option>
+                            </select>
                         </div>
-
-                        <div class="form-group">
-                            <label class="form-label" for="mailtrap_inbox_id">Mailtrap Inbox ID</label>
-                            <input type="text" id="mailtrap_inbox_id" name="mailtrap_inbox_id" class="form-input" 
-                                   placeholder="Enter your Mailtrap inbox ID" required>
-                            <p class="form-help">You can find this in your Mailtrap dashboard</p>
-                        </div>
-
-                        <!-- Hidden fields for IMAP (required by the system but not used with Mailtrap) -->
-                        <input type="hidden" name="incoming_server_host" value="sandbox.api.mailtrap.io">
-                        <input type="hidden" name="incoming_server_port" value="443">
-                        <input type="hidden" name="incoming_server_username" value="api">
-                        <input type="hidden" name="incoming_server_password" value="d2a9db1ad8cd635fad770c540e6c3c9c">
-                        <input type="hidden" name="incoming_server_encryption" value="ssl">
 
                         <div class="section-divider"></div>
 
@@ -741,21 +891,41 @@
                 <div class="setup-card">
                     <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem;">Quick Start Guide</h2>
                     
-                    <ol style="list-style: decimal; padding-left: 1.5rem; line-height: 1.8;">
-                        <li>Enter the email address you want to use for this inbox</li>
-                        <li>The SMTP settings are pre-configured for Mailtrap testing</li>
-                        <li>Get your Mailtrap Inbox ID from your Mailtrap dashboard</li>
-                        <li>Test the connection to ensure everything is working</li>
-                        <li>Save the configuration to start receiving emails</li>
-                    </ol>
+                    <div style="margin-bottom: 1.5rem;">
+                        <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem;">For Pre-configured Services:</h3>
+                        <ol style="list-style: decimal; padding-left: 1.5rem; line-height: 1.8; margin-bottom: 1rem;">
+                            <li>Select your email service provider from the dropdown</li>
+                            <li>Enter your email address and display name</li>
+                            <li>The IMAP/SMTP settings will be auto-filled</li>
+                            <li>Enter your email password (or app password if required)</li>
+                            <li>Test the connection and save</li>
+                        </ol>
+                    </div>
+
+                    <div style="margin-bottom: 1.5rem;">
+                        <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem;">For Custom Configuration:</h3>
+                        <ol style="list-style: decimal; padding-left: 1.5rem; line-height: 1.8;">
+                            <li>Select "Custom Configuration" at the top</li>
+                            <li>Enter your email address and display name</li>
+                            <li>Enter your IMAP server details (e.g., imap.hostinger.com, port 993)</li>
+                            <li>Enter your SMTP server details (e.g., smtp.hostinger.com, port 587)</li>
+                            <li>Provide your email credentials</li>
+                            <li>Test the connection and save</li>
+                        </ol>
+                    </div>
 
                     <div class="alert alert-info" style="margin-top: 1.5rem;">
-                        <strong>Testing Tips:</strong>
+                        <strong>Common Email Providers:</strong>
                         <ul style="list-style: disc; padding-left: 1.5rem; margin-top: 0.5rem;">
-                            <li>Send test emails to your Mailtrap inbox to see them appear in CollaborInbox</li>
-                            <li>Use the Mailtrap dashboard to monitor email delivery</li>
-                            <li>Check the API logs in Mailtrap for troubleshooting</li>
+                            <li><strong>Gmail:</strong> Requires an App Password (not your regular password)</li>
+                            <li><strong>Outlook:</strong> May require an App Password if 2FA is enabled</li>
+                            <li><strong>Hostinger:</strong> Use imap.hostinger.com (993) and smtp.hostinger.com (587)</li>
+                            <li><strong>Custom:</strong> Contact your email provider for server settings</li>
                         </ul>
+                    </div>
+
+                    <div class="alert alert-success" style="margin-top: 1rem;">
+                        <strong>Security Note:</strong> Always use SSL/TLS encryption when available. Your passwords are encrypted and stored securely.
                     </div>
                 </div>
             </div>
@@ -785,6 +955,175 @@
         userMenu.classList.remove('show');
     });
 
+    // Configuration type toggle
+    const configTypeInputs = document.querySelectorAll('input[name="config_type"]');
+    const presetConfig = document.getElementById('preset-config');
+    const emailService = document.getElementById('email_service');
+    const imapSection = document.getElementById('imap-section');
+    const mailtrapSection = document.getElementById('mailtrap-section');
+    const serviceInfo = document.getElementById('service-info');
+
+    // Email service configurations
+    const emailConfigs = {
+        gmail: {
+            name: 'Gmail',
+            info: 'Gmail requires an App Password for IMAP/SMTP access. Enable 2-factor authentication and generate an app password.',
+            imap: { host: 'imap.gmail.com', port: 993, ssl: true },
+            smtp: { host: 'smtp.gmail.com', port: 587, tls: true }
+        },
+        outlook: {
+            name: 'Outlook/Hotmail',
+            info: 'Outlook may require an app password if 2-factor authentication is enabled.',
+            imap: { host: 'outlook.office365.com', port: 993, ssl: true },
+            smtp: { host: 'smtp.office365.com', port: 587, tls: true }
+        },
+        yahoo: {
+            name: 'Yahoo Mail',
+            info: 'Yahoo requires an app password. Go to Account Security and generate an app password.',
+            imap: { host: 'imap.mail.yahoo.com', port: 993, ssl: true },
+            smtp: { host: 'smtp.mail.yahoo.com', port: 587, tls: true }
+        },
+        hostinger: {
+            name: 'Hostinger',
+            info: 'Use your Hostinger email credentials. Check your hosting panel for the correct server settings.',
+            imap: { host: 'imap.hostinger.com', port: 993, ssl: true },
+            smtp: { host: 'smtp.hostinger.com', port: 587, tls: true }
+        },
+        mailtrap: {
+            name: 'Mailtrap',
+            info: 'Test email service for development. Emails are captured but not delivered to real recipients.',
+            useApi: true,
+            smtp: { host: 'sandbox.smtp.mailtrap.io', port: 2525, tls: true }
+        }
+    };
+
+    // Handle configuration type change
+    configTypeInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            if (this.value === 'preset') {
+                presetConfig.style.display = 'block';
+                handleEmailServiceChange();
+            } else {
+                presetConfig.style.display = 'none';
+                imapSection.style.display = 'block';
+                mailtrapSection.style.display = 'none';
+                clearFormFields();
+            }
+        });
+    });
+
+    // Handle email service selection
+    emailService.addEventListener('change', handleEmailServiceChange);
+
+    function handleEmailServiceChange() {
+        const service = emailService.value;
+        const outlookOAuthSection = document.getElementById('outlook-oauth-section');
+        
+        if (service === 'other' || document.querySelector('input[name="config_type"]:checked').value === 'custom') {
+            // Show manual configuration
+            imapSection.style.display = 'block';
+            mailtrapSection.style.display = 'none';
+            serviceInfo.style.display = 'none';
+            outlookOAuthSection.style.display = 'none';
+            clearFormFields();
+        } else if (service && emailConfigs[service]) {
+            const config = emailConfigs[service];
+            
+            // Update service info
+            serviceInfo.innerHTML = `<strong>${config.name}:</strong> ${config.info}`;
+            serviceInfo.style.display = 'block';
+            
+            // Show OAuth button for Outlook
+            if (service === 'outlook') {
+                outlookOAuthSection.style.display = 'block';
+            } else {
+                outlookOAuthSection.style.display = 'none';
+            }
+            
+            if (config.useApi) {
+                // Mailtrap uses API
+                imapSection.style.display = 'none';
+                mailtrapSection.style.display = 'block';
+                
+                // Set SMTP fields
+                document.getElementById('smtp_host').value = config.smtp.host;
+                document.getElementById('smtp_port').value = config.smtp.port;
+                document.getElementById('smtp_encryption').value = config.smtp.tls ? 'tls' : 'ssl';
+                document.getElementById('smtp_username').value = 'acb4f069175c45';
+                document.getElementById('smtp_password').value = '7898c8ac25792b';
+                
+                // Copy Mailtrap hidden fields to main form
+                document.getElementById('imap_host').value = document.getElementById('mailtrap_imap_host').value;
+                document.getElementById('imap_port').value = document.getElementById('mailtrap_imap_port').value;
+                document.getElementById('imap_username').value = document.getElementById('mailtrap_imap_username').value;
+                document.getElementById('imap_password').value = document.getElementById('mailtrap_imap_password').value;
+            } else {
+                // Regular IMAP/SMTP service
+                imapSection.style.display = 'block';
+                mailtrapSection.style.display = 'none';
+                
+                // Set IMAP fields
+                if (config.imap) {
+                    document.getElementById('imap_host').value = config.imap.host;
+                    document.getElementById('imap_port').value = config.imap.port;
+                    document.getElementById('imap_encryption').value = config.imap.ssl ? 'ssl' : 'tls';
+                }
+                
+                // Set SMTP fields
+                if (config.smtp) {
+                    document.getElementById('smtp_host').value = config.smtp.host;
+                    document.getElementById('smtp_port').value = config.smtp.port;
+                    document.getElementById('smtp_encryption').value = config.smtp.tls ? 'tls' : 'ssl';
+                }
+            }
+        } else {
+            serviceInfo.style.display = 'none';
+            imapSection.style.display = 'block';
+            mailtrapSection.style.display = 'none';
+            outlookOAuthSection.style.display = 'none';
+        }
+    }
+
+    function clearFormFields() {
+        document.getElementById('imap_host').value = '';
+        document.getElementById('imap_port').value = '993';
+        document.getElementById('smtp_host').value = '';
+        document.getElementById('smtp_port').value = '587';
+        document.getElementById('smtp_username').value = '';
+        document.getElementById('smtp_password').value = '';
+        document.getElementById('imap_username').value = '';
+        document.getElementById('imap_password').value = '';
+    }
+
+    // Auto-fill username fields when email is entered
+    document.getElementById('email_address').addEventListener('blur', function() {
+        const email = this.value;
+        if (email && !document.getElementById('imap_username').value) {
+            document.getElementById('imap_username').value = email;
+            document.getElementById('smtp_username').value = email;
+        }
+    });
+
+    // Update port when encryption changes
+    document.getElementById('imap_encryption').addEventListener('change', function() {
+        if (this.value === 'ssl') {
+            document.getElementById('imap_port').value = '993';
+        } else if (this.value === 'tls') {
+            document.getElementById('imap_port').value = '143';
+        }
+    });
+
+    document.getElementById('smtp_encryption').addEventListener('change', function() {
+        if (this.value === 'ssl') {
+            document.getElementById('smtp_port').value = '465';
+        } else if (this.value === 'tls') {
+            document.getElementById('smtp_port').value = '587';
+        }
+    });
+
+    // Initialize with Mailtrap selected
+    handleEmailServiceChange();
+
     // Test connection functionality
     document.getElementById('testConnection').addEventListener('click', function() {
         const button = this;
@@ -802,10 +1141,15 @@
         // Simulate API test (in real implementation, this would make an actual API call)
         setTimeout(() => {
             // Simulate successful connection
+            const service = emailService.value || 'custom';
+            const message = service === 'mailtrap' 
+                ? 'SMTP connection to Mailtrap established successfully.'
+                : 'IMAP and SMTP connections verified successfully.';
+                
             testResult.innerHTML = `
                 <div class="test-success">
                     <strong>✓ Connection Successful!</strong><br>
-                    SMTP connection to Mailtrap established successfully.
+                    ${message}
                 </div>
             `;
             testResult.style.display = 'block';

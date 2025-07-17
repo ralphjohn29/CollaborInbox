@@ -1,6 +1,6 @@
-<div class="email-detail-container">
+<div id="emailDetailContent" class="email-detail-container" style="background: #fafafa; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);">
     <!-- Email Header -->
-    <div class="bg-white p-6 border-b">
+    <div class="bg-white p-6 border-b" style="background: white; border-bottom: 1px solid #e5e7eb;">
         <div class="flex justify-between items-start mb-4">
             <h2 class="text-xl font-semibold">{{ $email->subject }}</h2>
             <div class="flex space-x-2">
@@ -42,11 +42,11 @@
         </div>
 
         <!-- Quick Actions -->
-        <div class="flex items-center space-x-4 text-sm">
+        <div class="flex items-center space-x-4 text-sm bg-gray-100 p-4 rounded" style="background: #f3f4f6; border-radius: 8px; margin-top: 16px; border: 1px solid #e5e7eb;">
             <!-- Status -->
             <div class="flex items-center space-x-2">
                 <label class="text-gray-600">Status:</label>
-                <select onchange="updateEmailStatus({{ $email->id }}, this.value)" class="px-2 py-1 border rounded">
+                <select onchange="updateEmailStatus({{ $email->id }}, this.value)" class="px-3 py-2 border rounded" style="background: white; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; min-width: 120px;">
                     <option value="unread" {{ $email->status == 'unread' ? 'selected' : '' }}>Unread</option>
                     <option value="read" {{ $email->status == 'read' ? 'selected' : '' }}>Read</option>
                     <option value="replied" {{ $email->status == 'replied' ? 'selected' : '' }}>Replied</option>
@@ -57,7 +57,7 @@
             <!-- Assign To -->
             <div class="flex items-center space-x-2">
                 <label class="text-gray-600">Assign to:</label>
-                <select onchange="assignEmail({{ $email->id }}, this.value)" class="px-2 py-1 border rounded">
+                <select onchange="assignEmail({{ $email->id }}, this.value)" class="px-3 py-2 border rounded" style="background: white; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; min-width: 120px;">
                     <option value="">Unassigned</option>
                     @foreach($users as $user)
                         <option value="{{ $user->id }}" {{ $email->assigned_to == $user->id ? 'selected' : '' }}>
@@ -71,7 +71,7 @@
             @if($dispositions->count() > 0)
             <div class="flex items-center space-x-2">
                 <label class="text-gray-600">Disposition:</label>
-                <select onchange="setDisposition({{ $email->id }}, this.value)" class="px-2 py-1 border rounded">
+                <select onchange="setDisposition({{ $email->id }}, this.value)" class="px-3 py-2 border rounded" style="background: white; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; min-width: 120px;">
                     <option value="">None</option>
                     @foreach($dispositions as $disposition)
                         <option value="{{ $disposition->id }}" {{ $email->disposition_id == $disposition->id ? 'selected' : '' }}>
@@ -85,8 +85,8 @@
     </div>
 
     <!-- Email Body -->
-    <div class="bg-white p-6">
-        <div class="prose max-w-none">
+    <div class="bg-white p-6" style="background: white; line-height: 1.6; color: #374151;">
+        <div class="prose max-w-none" style="font-size: 15px; line-height: 1.7; color: #374151;">
             @if($email->body_html)
                 {!! $email->body_html !!}
             @else
@@ -119,23 +119,48 @@
     </div>
 
     <!-- Reply Section -->
-    <div class="bg-gray-50 p-6 border-t">
-        <button onclick="showReplyForm({{ $email->id }})" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-            Reply
-        </button>
-        <button onclick="showForwardForm({{ $email->id }})" class="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 ml-2">
-            Forward
-        </button>
+    <div class="reply-section testtt" style="padding: 1.5rem; border-top: 1px solid #e5e7eb; background: #ffffff; border-radius: 0 0 8px 8px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);">
+        <div class="reply-actions" style="margin-bottom: 1rem; display: flex; gap: 0.75rem; align-items: center;">
+            <button onclick="showReplyForm({{ $email->id }})" class="btn btn-primary reply-btn" style="background: #2563eb; color: white; border: none; border-radius: 6px; padding: 0.625rem 1.25rem; font-size: 14px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: all 0.15s ease; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);">
+                <i class="fas fa-reply"></i> Reply
+            </button>
+            <button onclick="showForwardForm({{ $email->id }})" class="btn btn-secondary" style="background: #6b7280; color: white; border: none; border-radius: 6px; padding: 0.625rem 1.25rem; font-size: 14px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: all 0.15s ease; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);">
+                <i class="fas fa-share"></i> Forward
+            </button>
+            <button onclick="toggleStar({{ $email->id }})" id="star-btn-{{ $email->id }}" class="btn btn-star" style="background: {{ $email->is_starred ? '#fbbf24' : 'transparent' }}; border: 1px solid #fbbf24; color: {{ $email->is_starred ? 'white' : '#fbbf24' }}; border-radius: 6px; padding: 0.625rem 1rem; font-size: 14px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: all 0.15s ease;">
+                <i id="star-icon-{{ $email->id }}" class="fas fa-star"></i> {{ $email->is_starred ? 'Starred' : 'Star' }}
+            </button>
+        </div>
 
         <!-- Reply Form (hidden by default) -->
-        <div id="reply-form-{{ $email->id }}" class="hidden mt-4">
-            <form onsubmit="sendReply(event, {{ $email->id }})">
-                <textarea name="reply_body" rows="6" class="w-full p-3 border rounded" placeholder="Type your reply..."></textarea>
-                <div class="mt-2 flex space-x-2">
-                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-                        Send Reply
+        <div id="reply-form-{{ $email->id }}" class="reply-form" style="background: #f9fafb; border-radius: 8px; padding: 1.25rem; margin-top: 1rem; border: 1px solid #e5e7eb; display: none;">
+            <form onsubmit="sendReply(event, {{ $email->id }})" style="display: flex; flex-direction: column; gap: 1rem;">
+                <!-- From Account Selector -->
+                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    <label for="reply-from-{{ $email->id }}" style="font-size: 14px; font-weight: 500; color: #374151;">Send from</label>
+                    <select id="reply-from-{{ $email->id }}" name="from_account_id" class="px-3 py-2 border rounded" style="background: white; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; min-width: 200px;">
+                        @php
+                            // FIX: Use the email's workspace_id to get the correct accounts
+                            $accounts = App\Models\EmailAccount::where('workspace_id', $email->workspace_id)->where('is_active', true)->get();
+                        @endphp
+                        @foreach($accounts as $account)
+                            <option value="{{ $account->id }}" {{ $account->id == $email->email_account_id ? 'selected' : '' }}>
+                                {{ $account->from_name ? $account->from_name . ' <' . $account->email_address . '>' : $account->email_address }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                
+                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    <label for="reply-editor-{{ $email->id }}" style="font-size: 14px; font-weight: 500; color: #374151;">Your Reply</label>
+                    <div id="reply-editor-{{ $email->id }}" style="min-height: 200px; background: white; border-radius: 6px; border: 1px solid #d1d5db;"></div>
+                    <input type="hidden" id="reply-body-{{ $email->id }}" name="reply_body" value="">
+                </div>
+                <div style="display: flex; gap: 0.75rem; align-items: center;">
+                    <button type="submit" class="btn btn-primary" style="background: #2563eb; color: white; border: none; border-radius: 6px; padding: 0.625rem 1.25rem; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.15s ease; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fas fa-paper-plane"></i> Send Reply
                     </button>
-                    <button type="button" onclick="hideReplyForm({{ $email->id }})" class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400">
+                    <button type="button" onclick="hideReplyForm({{ $email->id }})" class="btn btn-outline" style="background: white; color: #6b7280; border: 1px solid #d1d5db; border-radius: 6px; padding: 0.625rem 1.25rem; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.15s ease;">
                         Cancel
                     </button>
                 </div>
@@ -236,23 +261,74 @@ function setDisposition(emailId, dispositionId) {
     });
 }
 
-function showReplyForm(emailId) {
-    document.getElementById(`reply-form-${emailId}`).classList.remove('hidden');
-}
+// Reply form functions are now handled by the main page JavaScript
+// These functions are placeholders that will be overridden by the main page functions
 
-function hideReplyForm(emailId) {
-    document.getElementById(`reply-form-${emailId}`).classList.add('hidden');
-}
+// showReplyForm, hideReplyForm, and sendReply are defined in the main page
+// and will work with the Quill.js editor
 
-function showNotification(message) {
-    // Simple notification - you can enhance this
+function showNotification(message, type = 'success') {
     const notification = document.createElement('div');
-    notification.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow-lg';
+    const bgColor = type === 'error' ? 'bg-red-500' : 'bg-green-500';
+    notification.className = `fixed bottom-4 right-4 ${bgColor} text-white px-4 py-2 rounded shadow-lg z-50`;
     notification.textContent = message;
     document.body.appendChild(notification);
     
     setTimeout(() => {
         notification.remove();
-    }, 3000);
+    }, 5000);
 }
+
+// Add CSS for enhanced interactions
+const style = document.createElement('style');
+style.textContent = `
+    .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    .btn:active {
+        transform: translateY(0);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+    }
+    
+    .btn-primary:hover {
+        background: #1d4ed8 !important;
+    }
+    
+    .btn-secondary:hover {
+        background: #4b5563 !important;
+    }
+    
+    .btn-star:hover {
+        background: #fbbf24 !important;
+        color: white !important;
+    }
+    
+    .btn-outline:hover {
+        background: #f3f4f6 !important;
+        border-color: #9ca3af !important;
+    }
+    
+    .reply-textarea:focus {
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+    }
+    
+    .reply-form {
+        animation: slideDown 0.2s ease-out;
+    }
+    
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+`;
+document.head.appendChild(style);
 </script>
